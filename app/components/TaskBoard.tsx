@@ -1,9 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Project, Task } from '@/lib/data';
 import { createTask, updateTaskStatus } from '@/app/actions';
+import GanttView from './GanttView';
+import WbsView from './WbsView';
 
 export default function TaskBoard({ project }: { project: Project }) {
+  const [view, setView] = useState<'list' | 'gantt' | 'wbs'>('list');
+
   if (!project) return <div className="p-10 text-gray-500">Select a project to start.</div>;
 
   return (
@@ -14,77 +19,88 @@ export default function TaskBoard({ project }: { project: Project }) {
           <h2 className="text-2xl font-bold text-gray-800">{project.name}</h2>
           <p className="text-sm text-gray-500 mt-1">{project.description}</p>
         </div>
-        <div className="text-sm font-medium px-3 py-1 bg-green-100 text-green-700 rounded-full">
-          {project.status.toUpperCase()}
+        
+        {/* View Switcher */}
+        <div className="bg-gray-100 p-1 rounded-lg flex text-sm font-medium">
+          <button onClick={() => setView('list')} className={`px-4 py-1.5 rounded-md transition-all ${view === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>List</button>
+          <button onClick={() => setView('gantt')} className={`px-4 py-1.5 rounded-md transition-all ${view === 'gantt' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>Gantt</button>
+          <button onClick={() => setView('wbs')} className={`px-4 py-1.5 rounded-md transition-all ${view === 'wbs' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>WBS</button>
         </div>
       </header>
 
-      {/* Task List */}
+      {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
-              <tr>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Task Name</th>
-                <th className="px-6 py-3">Timeline</th>
-                <th className="px-6 py-3">Progress</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {project.tasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50 transition-colors group">
-                  <td className="px-6 py-4">
-                    <StatusCheckbox projectId={project.id} task={task} />
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-700">
-                    {task.title}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 font-mono">
-                    {task.startDate} → {task.endDate}
-                  </td>
-                  <td className="px-6 py-4 w-32">
-                    <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-blue-500" 
-                        style={{ width: `${task.progress}%` }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {project.tasks.length === 0 && (
+        {view === 'list' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
-                    No tasks yet. Add one below!
-                  </td>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Task Name</th>
+                  <th className="px-6 py-3">Timeline</th>
+                  <th className="px-6 py-3">Progress</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {project.tasks.map((task) => (
+                  <tr key={task.id} className="hover:bg-gray-50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <StatusCheckbox projectId={project.id} task={task} />
+                    </td>
+                    <td className="px-6 py-4 font-medium text-gray-700">
+                      {task.title}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 font-mono">
+                      {task.startDate} → {task.endDate}
+                    </td>
+                    <td className="px-6 py-4 w-32">
+                      <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-500" 
+                          style={{ width: `${task.progress}%` }}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {project.tasks.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
+                      No tasks yet. Add one below!
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        {/* Add Task Form */}
-        <div className="mt-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">Add New Task</h3>
-          <form action={createTask.bind(null, project.id)} className="flex gap-4 items-end">
-            <div className="flex-1">
-              <label className="block text-xs text-gray-500 mb-1">Task Title</label>
-              <input name="title" className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" placeholder="e.g. Design Database" required />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500 mb-1">Start Date</label>
-              <input type="date" name="startDate" className="bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500 mb-1">End Date</label>
-              <input type="date" name="endDate" className="bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" required />
-            </div>
-            <button type="submit" className="bg-gray-900 text-white px-5 py-2 rounded hover:bg-black transition-colors text-sm font-medium">
-              Create Task
-            </button>
-          </form>
-        </div>
+        {view === 'gantt' && <GanttView tasks={project.tasks} />}
+        {view === 'wbs' && <WbsView project={project} />}
+
+        {/* Add Task Form (Only in List View for simplicity, or always visible? Let's keep it in List view mainly, or below content) */}
+        {view === 'list' && (
+          <div className="mt-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">Add New Task</h3>
+            <form action={createTask.bind(null, project.id)} className="flex gap-4 items-end">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-500 mb-1">Task Title</label>
+                <input name="title" className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" placeholder="e.g. Design Database" required />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Start Date</label>
+                <input type="date" name="startDate" className="bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">End Date</label>
+                <input type="date" name="endDate" className="bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm" required />
+              </div>
+              <button type="submit" className="bg-gray-900 text-white px-5 py-2 rounded hover:bg-black transition-colors text-sm font-medium">
+                Create Task
+              </button>
+            </form>
+          </div>
+        )}
       </main>
     </div>
   );

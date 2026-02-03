@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PM Dashboard (Spec-Driven)
 
-## Getting Started
+這是一個基於 **Spec-Driven Development (SDD)** 方法論開發的專案管理儀表板。
+由 Agent (Amber) 與 User (Bruce) 共同維護。
 
-First, run the development server:
+## 📁 文件與規格
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+所有的設計文件都位於 `docs/` 目錄：
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **[功能規格書 (Spec)](./docs/specs/001-pm-dashboard-v1/spec.md)**: 定義用戶故事與驗收標準。
+- **[實作計畫 (Plan)](./docs/specs/001-pm-dashboard-v1/plan.md)**: 定義技術架構與實作步驟。
+- **[資料模型 (Data Model)](./docs/specs/001-pm-dashboard-v1/data-model.md)**: JSON 資料結構定義。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✅ 目前進度 (Current Status)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [x] **Phase 1: Initialization** (Repo setup, Next.js scaffold)
+- [x] **Phase 2: Data Layer** (Server Actions, JSON DB)
+- [x] **Phase 3: UI - List View** (Project CRUD, Task CRUD)
+- [x] **Phase 4: UI - Visuals** (Gantt Chart, WBS Tree)
+- [x] **Phase 5: Deployment** (Codespaces Integration)
 
-## Learn More
+## 🚀 快速開始
 
-To learn more about Next.js, take a look at the following resources:
+1.  **安裝依賴**:
+    ```bash
+    npm install
+    ```
+2.  **啟動開發伺服器**:
+    ```bash
+    npm run dev
+    ```
+3.  **訪問**: `http://localhost:3000`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏗️ 架構說明
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Frontend**: Next.js 14 (App Router) + Tailwind CSS
+- **Backend**: Server Actions (Direct FS Access)
+- **Database**: `/data/projects.json` (Local JSON File)
 
-## Deploy on Vercel
+## 🤝 協作模式
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **User**: 透過 Web UI 操作，或直接修改代碼。
+- **Agent**: 透過讀取 `docs/specs` 理解需求，並直接推送代碼更新。
