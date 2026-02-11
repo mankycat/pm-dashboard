@@ -1,0 +1,80 @@
+[
+    {
+        "id": "db-projects",
+        "name": "Projects",
+        "description": "Main project tracking",
+        "schema": [
+            {
+                "id": "prop-status",
+                "name": "Status",
+                "type": "status",
+                "options": [
+                    {
+                        "id": "opt-idea",
+                        "name": "Idea",
+                        "color": "gray"
+                    },
+                    {
+                        "id": "opt-active",
+                        "name": "Active",
+                        "color": "blue"
+                    },
+                    {
+                        "id": "opt-done",
+                        "name": "Done",
+                        "color": "green"
+                    }
+                ]
+            },
+            {
+                "id": "prop-owner",
+                "name": "Owner",
+                "type": "text"
+            }
+        ]
+    },
+    {
+        "id": "db-tasks",
+        "name": "Tasks",
+        "description": "All tasks across projects",
+        "schema": [
+            {
+                "id": "prop-status",
+                "name": "Status",
+                "type": "status",
+                "options": [
+                    {
+                        "id": "opt-todo",
+                        "name": "To Do",
+                        "color": "gray"
+                    },
+                    {
+                        "id": "opt-doing",
+                        "name": "In Progress",
+                        "color": "yellow"
+                    },
+                    {
+                        "id": "opt-done",
+                        "name": "Done",
+                        "color": "green"
+                    }
+                ]
+            },
+            {
+                "id": "prop-project",
+                "name": "Project",
+                "type": "text"
+            },
+            {
+                "id": "prop-start",
+                "name": "Start Date",
+                "type": "date"
+            },
+            {
+                "id": "prop-due",
+                "name": "Due Date",
+                "type": "date"
+            }
+        ]
+    }
+]

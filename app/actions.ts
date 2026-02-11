@@ -1,65 +1,57 @@
 'use server';
 
-import { getProjects, saveProjects, Project, Task } from '@/lib/data';
+import {
+  getDatabases,
+  getPages,
+  savePage,
+  updatePage,
+  createPageInDb,
+  Page,
+  PropertyValue,
+  getDatabase
+} from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function fetchProjects() {
-  return await getProjects();
+export async function fetchDatabases() {
+  return await getDatabases();
 }
 
-export async function createProject(formData: FormData) {
-  const name = formData.get('name') as string;
-  if (!name) return;
+export async function fetchPages(databaseId: string) {
+  return await getPages(databaseId);
+}
 
-  const projects = await getProjects();
-  const newProject: Project = {
+export async function createPage(databaseId: string, title: string) {
+  if (!title) return;
+
+  const newPage: Page = {
     id: uuidv4(),
-    name,
-    status: 'active',
-    tasks: []
+    databaseId,
+    title,
+    properties: {},
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
-  projects.push(newProject);
-  await saveProjects(projects);
+  await createPageInDb(newPage);
   revalidatePath('/');
 }
 
-export async function createTask(projectId: string, formData: FormData) {
-  const title = formData.get('title') as string;
-  const startDate = formData.get('startDate') as string;
-  const endDate = formData.get('endDate') as string;
-
-  if (!title || !startDate || !endDate) return;
-
-  const projects = await getProjects();
-  const project = projects.find(p => p.id === projectId);
-
-  if (project) {
-    const newTask: Task = {
-      id: uuidv4(),
-      title,
-      startDate,
-      endDate,
-      progress: 0,
-      status: 'todo'
-    };
-    project.tasks.push(newTask);
-    await saveProjects(projects);
-    revalidatePath('/');
-  }
+export async function updatePageProperty(
+  databaseId: string,
+  pageId: string,
+  propertyId: string,
+  value: any
+) {
+  await updatePage(databaseId, pageId, (page) => {
+    page.properties[propertyId] = value;
+  });
+  revalidatePath('/');
 }
 
-export async function updateTaskStatus(projectId: string, taskId: string, newStatus: Task['status']) {
-  const projects = await getProjects();
-  const project = projects.find(p => p.id === projectId);
-  if (project) {
-    const task = project.tasks.find(t => t.id === taskId);
-    if (task) {
-      task.status = newStatus;
-      task.progress = newStatus === 'done' ? 100 : task.progress;
-      await saveProjects(projects);
-      revalidatePath('/');
-    }
-  }
+export async function updatePageTitle(databaseId: string, pageId: string, newTitle: string) {
+  await updatePage(databaseId, pageId, (page) => {
+    page.title = newTitle;
+  });
+  revalidatePath('/');
 }
