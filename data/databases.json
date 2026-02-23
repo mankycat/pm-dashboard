@@ -27,6 +27,33 @@
                 ]
             },
             {
+                "id": "prop-priority",
+                "name": "Priority",
+                "type": "select",
+                "options": [
+                    {
+                        "id": "opt-high",
+                        "name": "High",
+                        "color": "red"
+                    },
+                    {
+                        "id": "opt-medium",
+                        "name": "Medium",
+                        "color": "yellow"
+                    },
+                    {
+                        "id": "opt-low",
+                        "name": "Low",
+                        "color": "gray"
+                    }
+                ]
+            },
+            {
+                "id": "prop-due",
+                "name": "Due Date",
+                "type": "date"
+            },
+            {
                 "id": "prop-owner",
                 "name": "Owner",
                 "type": "text"
@@ -57,6 +84,50 @@
                         "id": "opt-done",
                         "name": "Done",
                         "color": "green"
+                    }
+                ]
+            },
+            {
+                "id": "prop-priority",
+                "name": "Priority",
+                "type": "select",
+                "options": [
+                    {
+                        "id": "opt-high",
+                        "name": "High",
+                        "color": "red"
+                    },
+                    {
+                        "id": "opt-medium",
+                        "name": "Medium",
+                        "color": "yellow"
+                    },
+                    {
+                        "id": "opt-low",
+                        "name": "Low",
+                        "color": "gray"
+                    }
+                ]
+            },
+            {
+                "id": "prop-tags",
+                "name": "Tags",
+                "type": "multi-select",
+                "options": [
+                    {
+                        "id": "opt-bug",
+                        "name": "Bug",
+                        "color": "red"
+                    },
+                    {
+                        "id": "opt-feature",
+                        "name": "Feature",
+                        "color": "blue"
+                    },
+                    {
+                        "id": "opt-devops",
+                        "name": "DevOps",
+                        "color": "purple"
                     }
                 ]
             },

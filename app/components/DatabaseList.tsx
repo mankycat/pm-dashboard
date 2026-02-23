@@ -23,6 +23,17 @@ export default function DatabaseList({
             </div>
 
             <div className="px-3 space-y-1">
+                <Link
+                    href="/"
+                    className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 mb-6 ${!activeId
+                        ? 'bg-white/60 text-indigo-700 shadow-sm border border-white/40 backdrop-blur-sm'
+                        : 'text-gray-600 hover:bg-white/40 hover:text-gray-900'
+                        }`}
+                >
+                    <LayoutGrid className={`w-4 h-4 ${!activeId ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                    Dashboard
+                </Link>
+
                 <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                     Databases
                 </h3>
@@ -33,8 +44,8 @@ export default function DatabaseList({
                             key={db.id}
                             href={`/?databaseId=${db.id}`}
                             className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                                    ? 'bg-white/60 text-indigo-700 shadow-sm border border-white/40 backdrop-blur-sm'
-                                    : 'text-gray-600 hover:bg-white/40 hover:text-gray-900'
+                                ? 'bg-white/60 text-indigo-700 shadow-sm border border-white/40 backdrop-blur-sm'
+                                : 'text-gray-600 hover:bg-white/40 hover:text-gray-900'
                                 }`}
                         >
                             {db.name.toLowerCase().includes('task') ? (

@@ -8,7 +8,8 @@ import {
   createPageInDb,
   Page,
   PropertyValue,
-  getDatabase
+  getDatabase,
+  deletePage
 } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
@@ -53,5 +54,17 @@ export async function updatePageTitle(databaseId: string, pageId: string, newTit
   await updatePage(databaseId, pageId, (page) => {
     page.title = newTitle;
   });
+  revalidatePath('/');
+}
+
+export async function updatePageContent(databaseId: string, pageId: string, content: string) {
+  await updatePage(databaseId, pageId, (page) => {
+    page.content = content;
+  });
+  revalidatePath('/');
+}
+
+export async function deletePageAction(databaseId: string, pageId: string) {
+  await deletePage(databaseId, pageId);
   revalidatePath('/');
 }

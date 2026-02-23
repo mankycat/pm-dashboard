@@ -4,27 +4,33 @@
     "databaseId": "db-projects",
     "title": "New Website Launch",
     "properties": {
-      "prop-status": "opt-idea",
-      "prop-owner": ""
+      "prop-status": "opt-active",
+      "prop-owner": "2026/02/24",
+      "prop-due": "2026-02-24"
     },
     "createdAt": "2026-02-05T09:08:36.467Z",
-    "updatedAt": "2026-02-05T09:10:13.738Z"
+    "updatedAt": "2026-02-23T04:18:54.874Z"
   },
   {
     "id": "42dab3b6-407e-43e1-ad59-f9a0e2091304",
     "databaseId": "db-projects",
     "title": "New Website Launch",
-    "properties": {},
+    "properties": {
+      "prop-due": "",
+      "prop-status": "opt-idea"
+    },
     "createdAt": "2026-02-05T09:10:21.321Z",
-    "updatedAt": "2026-02-05T09:10:21.321Z"
+    "updatedAt": "2026-02-23T07:32:14.432Z"
   },
   {
     "id": "ca139923-b1ff-49a2-a77b-fb442dbac6e3",
     "databaseId": "db-projects",
     "title": "New Website Launch",
-    "properties": {},
+    "properties": {
+      "prop-status": "opt-done"
+    },
     "createdAt": "2026-02-05T09:10:22.680Z",
-    "updatedAt": "2026-02-05T09:10:22.680Z"
+    "updatedAt": "2026-02-23T07:32:18.481Z"
   },
   {
     "id": "410ed40a-fcc2-4d9c-8598-c655bf747e20",

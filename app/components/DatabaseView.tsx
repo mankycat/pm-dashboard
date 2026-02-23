@@ -4,6 +4,7 @@ import { Database, Page } from '@/lib/data';
 import { createPage, updatePageProperty, updatePageTitle } from '@/app/actions';
 import { useState } from 'react';
 import { Plus, Search, Filter, MoreHorizontal, Calendar, User, Tag, CheckCircle2, Layers } from 'lucide-react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 export default function DatabaseView({
     database,
@@ -13,11 +14,53 @@ export default function DatabaseView({
     pages: Page[];
 }) {
     const [isCreating, setIsCreating] = useState(false);
+    const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortAsc, setSortAsc] = useState(true);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
 
     // Helper to singularize name for button (basic heuristic)
     const singularName = database.name.endsWith('s')
         ? database.name.slice(0, -1)
         : database.name;
+
+    const handleSort = (propId: string) => {
+        if (sortBy === propId) {
+            setSortAsc(!sortAsc);
+        } else {
+            setSortBy(propId);
+            setSortAsc(true);
+        }
+    };
+
+    const sortedPages = [...pages].sort((a, b) => {
+        if (!sortBy) return 0;
+
+        let aVal = a.properties[sortBy];
+        let bVal = b.properties[sortBy];
+
+        if (sortBy === 'title') {
+            aVal = a.title;
+            bVal = b.title;
+        }
+
+        // Handle string comparison safely (null checks)
+        const strA = String(aVal || '');
+        const strB = String(bVal || '');
+
+        const cmp = strA.localeCompare(strB);
+        return sortAsc ? cmp : -cmp;
+    });
+
+    const SortIcon = ({ propId }: { propId: string }) => {
+        if (sortBy !== propId) return null;
+        return (
+            <span className="text-indigo-500 ml-1">
+                {sortAsc ? '↑' : '↓'}
+            </span>
+        );
+    };
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
@@ -30,19 +73,6 @@ export default function DatabaseView({
                     )}
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="relative group">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            className="pl-9 pr-4 py-2 bg-white/60 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-48 transition-all hover:bg-white/80"
-                        />
-                    </div>
-
-                    <button className="p-2 text-gray-500 hover:text-gray-700 bg-white/60 hover:bg-white/90 border border-gray-200 rounded-lg transition-all shadow-sm">
-                        <Filter className="w-4 h-4" />
-                    </button>
-
                     <button
                         onClick={async () => {
                             setIsCreating(true);
@@ -64,26 +94,48 @@ export default function DatabaseView({
                     <table className="min-w-full divide-y divide-gray-100">
                         <thead className="bg-gray-50/50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/3">
-                                    Name
+                                <th
+                                    className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/3 cursor-pointer hover:text-gray-700"
+                                    onClick={() => handleSort('title')}
+                                >
+                                    <div className="flex items-center">
+                                        Name
+                                        <SortIcon propId="title" />
+                                    </div>
                                 </th>
                                 {database.schema.map(prop => (
-                                    <th key={prop.id} className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        key={prop.id}
+                                        className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                        onClick={() => handleSort(prop.id)}
+                                    >
                                         <div className="flex items-center gap-2">
                                             {getIconForType(prop.type)}
                                             {prop.name}
+                                            <SortIcon propId={prop.id} />
                                         </div>
                                     </th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100/60 bg-transparent">
-                            {pages.map(page => (
-                                <tr key={page.id} className="hover:bg-indigo-50/40 transition-colors group">
+                            {sortedPages.map(page => (
+                                <tr
+                                    key={page.id}
+                                    onClick={(e) => {
+                                        // Prevent navigation if clicking on an input or button
+                                        if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'SELECT') return;
+                                        const params = new URLSearchParams(searchParams);
+                                        params.set('itemId', page.id);
+                                        router.push(`${pathname}?${params.toString()}`);
+                                    }}
+                                    className="hover:bg-indigo-50/40 transition-colors group cursor-pointer"
+                                >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 group-hover:text-indigo-900">
                                         <input
                                             type="text"
                                             defaultValue={page.title}
+                                            onClick={(e) => e.stopPropagation()} // Stop propagation
                                             onBlur={async (e) => {
                                                 if (e.target.value !== page.title) {
                                                     await updatePageTitle(database.id, page.id, e.target.value);
@@ -96,14 +148,16 @@ export default function DatabaseView({
                                         const value = page.properties[prop.id];
                                         return (
                                             <td key={prop.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <PropertyCell
-                                                    databaseId={database.id}
-                                                    pageId={page.id}
-                                                    propertyId={prop.id}
-                                                    type={prop.type}
-                                                    options={prop.options}
-                                                    value={value}
-                                                />
+                                                <div onClick={(e) => e.stopPropagation()}>
+                                                    <PropertyCell
+                                                        databaseId={database.id}
+                                                        pageId={page.id}
+                                                        propertyId={prop.id}
+                                                        type={prop.type}
+                                                        options={prop.options}
+                                                        value={value}
+                                                    />
+                                                </div>
                                             </td>
                                         );
                                     })}
@@ -116,8 +170,21 @@ export default function DatabaseView({
                                             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                                                 <Layers className="w-6 h-6 text-gray-300" />
                                             </div>
-                                            <p className="font-medium">No items found</p>
-                                            <p className="text-sm mt-1">Get started by creating a new {singularName.toLowerCase()}</p>
+                                            <p className="font-medium text-gray-900">No items found</p>
+                                            <p className="text-sm mt-1 mb-4 text-gray-500">Get started by creating a new {singularName.toLowerCase()}</p>
+                                            <button
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    setIsCreating(true);
+                                                    await createPage(database.id, "Untitled");
+                                                    setIsCreating(false);
+                                                }}
+                                                disabled={isCreating}
+                                                className="flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-indigo-600 px-4 py-2 rounded-lg shadow-sm transition-all text-sm font-medium focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                                Create {singularName}
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
