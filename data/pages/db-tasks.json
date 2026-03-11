@@ -7,7 +7,7 @@
       "prop-status": "opt-done",
       "prop-start": "2025-11-13",
       "prop-due": "2026-03-08",
-      "prop-project": "",
+      "prop-category": "",
       "prop-tags": [
         "opt-feature"
       ],
@@ -22,7 +22,7 @@
     "databaseId": "db-tasks",
     "title": "Untitled",
     "properties": {
-      "prop-project": "",
+      "prop-category": "",
       "prop-due": ""
     },
     "createdAt": "2026-02-09T06:10:09.332Z",
@@ -35,7 +35,7 @@
     "properties": {
       "prop-start": "2025-12-01",
       "prop-due": "2025-12-05",
-      "prop-project": ""
+      "prop-category": ""
     },
     "createdAt": "2026-02-09T06:31:50.429Z",
     "updatedAt": "2026-02-11T02:01:55.348Z"

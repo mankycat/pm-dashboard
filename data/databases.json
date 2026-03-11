@@ -132,9 +132,31 @@
                 ]
             },
             {
-                "id": "prop-project",
-                "name": "Project",
-                "type": "text"
+                "id": "prop-category",
+                "name": "Category",
+                "type": "select",
+                "options": [
+                    {
+                        "id": "opt-frontend",
+                        "name": "Frontend",
+                        "color": "blue"
+                    },
+                    {
+                        "id": "opt-backend",
+                        "name": "Backend",
+                        "color": "green"
+                    },
+                    {
+                        "id": "opt-design",
+                        "name": "Design",
+                        "color": "purple"
+                    },
+                    {
+                        "id": "opt-marketing",
+                        "name": "Marketing",
+                        "color": "pink"
+                    }
+                ]
             },
             {
                 "id": "prop-start",
