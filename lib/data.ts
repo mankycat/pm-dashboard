@@ -109,6 +109,24 @@ export async function saveDatabase(database: Database) {
   });
 }
 
+export async function updateDatabasePropertySchema(
+  databaseId: string,
+  propertyId: string,
+  updater: (prop: PropertySchema) => void
+) {
+  await withLock(async () => {
+    const dbs = await getDatabases();
+    const dbIndex = dbs.findIndex(db => db.id === databaseId);
+    if (dbIndex === -1) return;
+    
+    const propIndex = dbs[dbIndex].schema.findIndex(p => p.id === propertyId);
+    if (propIndex === -1) return;
+    
+    updater(dbs[dbIndex].schema[propIndex]);
+    await writeJson(DB_FILE, dbs);
+  });
+}
+
 // --- Page Operations ---
 
 function getPageFilePath(databaseId: string) {

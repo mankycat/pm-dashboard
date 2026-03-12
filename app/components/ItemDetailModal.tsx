@@ -4,9 +4,10 @@ import { Database, Page } from '@/lib/data';
 import { updatePageTitle, updatePageProperty, updatePageContent, deletePageAction } from '@/app/actions';
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { X, Trash2, Calendar, Tag, CheckCircle2, User, AlignLeft, List, Type } from 'lucide-react';
+import { X, Trash2, Calendar, Tag, CheckCircle2, User, AlignLeft, List, Type, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import PropertyOptionsEditor from './PropertyOptionsEditor';
 
 export default function ItemDetailModal({
     database,
@@ -198,6 +199,8 @@ function getIconForType(type: string) {
 }
 
 function PropertyInput({ databaseId, pageId, property, value }: { databaseId: string, pageId: string, property: any, value: any }) {
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
+
     const handleChange = async (newValue: any) => {
         await updatePageProperty(databaseId, pageId, property.id, newValue);
     };
@@ -205,22 +208,37 @@ function PropertyInput({ databaseId, pageId, property, value }: { databaseId: st
     if (property.type === 'status' || property.type === 'select') {
         const selectedOption = property.options?.find((o: any) => o.id === value);
         return (
-            <select
-                value={value || ''}
-                onChange={(e) => handleChange(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-transparent"
-                style={{
-                    color: selectedOption ? getColor(selectedOption.color) : 'inherit',
-                    fontWeight: selectedOption ? 600 : 400
-                }}
-            >
-                <option value="">Empty</option>
-                {property.options?.map((opt: any) => (
-                    <option key={opt.id} value={opt.id}>
-                        {opt.name}
-                    </option>
-                ))}
-            </select>
+            <div className="flex items-center gap-2 w-full">
+                <select
+                    value={value || ''}
+                    onChange={(e) => handleChange(e.target.value)}
+                    className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-transparent"
+                    style={{
+                        color: selectedOption ? getColor(selectedOption.color) : 'inherit',
+                        fontWeight: selectedOption ? 600 : 400
+                    }}
+                >
+                    <option value="">Empty</option>
+                    {property.options?.map((opt: any) => (
+                        <option key={opt.id} value={opt.id}>
+                            {opt.name}
+                        </option>
+                    ))}
+                </select>
+                <button 
+                    onClick={() => setIsEditorOpen(true)}
+                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors flex-shrink-0"
+                    title="Edit Options"
+                >
+                    <Settings className="w-4 h-4" />
+                </button>
+                <PropertyOptionsEditor 
+                    databaseId={databaseId}
+                    property={property}
+                    isOpen={isEditorOpen}
+                    onClose={() => setIsEditorOpen(false)}
+                />
+            </div>
         );
     }
 

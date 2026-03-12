@@ -9,7 +9,9 @@ import {
   Page,
   PropertyValue,
   getDatabase,
-  deletePage
+  deletePage,
+  updateDatabasePropertySchema,
+  PropertySchema
 } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
@@ -66,5 +68,16 @@ export async function updatePageContent(databaseId: string, pageId: string, cont
 
 export async function deletePageAction(databaseId: string, pageId: string) {
   await deletePage(databaseId, pageId);
+  revalidatePath('/');
+}
+
+export async function updatePropertyOptionsAction(
+  databaseId: string,
+  propertyId: string,
+  options: NonNullable<PropertySchema['options']>
+) {
+  await updateDatabasePropertySchema(databaseId, propertyId, (prop) => {
+    prop.options = options;
+  });
   revalidatePath('/');
 }

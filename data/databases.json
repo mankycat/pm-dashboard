@@ -1,173 +1,178 @@
 [
-    {
-        "id": "db-projects",
-        "name": "Projects",
-        "description": "Main project tracking",
-        "schema": [
-            {
-                "id": "prop-status",
-                "name": "Status",
-                "type": "status",
-                "options": [
-                    {
-                        "id": "opt-idea",
-                        "name": "Idea",
-                        "color": "gray"
-                    },
-                    {
-                        "id": "opt-active",
-                        "name": "Active",
-                        "color": "blue"
-                    },
-                    {
-                        "id": "opt-done",
-                        "name": "Done",
-                        "color": "green"
-                    }
-                ]
-            },
-            {
-                "id": "prop-priority",
-                "name": "Priority",
-                "type": "select",
-                "options": [
-                    {
-                        "id": "opt-high",
-                        "name": "High",
-                        "color": "red"
-                    },
-                    {
-                        "id": "opt-medium",
-                        "name": "Medium",
-                        "color": "yellow"
-                    },
-                    {
-                        "id": "opt-low",
-                        "name": "Low",
-                        "color": "gray"
-                    }
-                ]
-            },
-            {
-                "id": "prop-due",
-                "name": "Due Date",
-                "type": "date"
-            },
-            {
-                "id": "prop-owner",
-                "name": "Owner",
-                "type": "text"
-            }
+  {
+    "id": "db-projects",
+    "name": "Projects",
+    "description": "Main project tracking",
+    "schema": [
+      {
+        "id": "prop-status",
+        "name": "Status",
+        "type": "status",
+        "options": [
+          {
+            "id": "opt-idea",
+            "name": "Idea",
+            "color": "gray"
+          },
+          {
+            "id": "opt-active",
+            "name": "Active",
+            "color": "blue"
+          },
+          {
+            "id": "opt-done",
+            "name": "Done",
+            "color": "green"
+          }
         ]
-    },
-    {
-        "id": "db-tasks",
-        "name": "Tasks",
-        "description": "All tasks across projects",
-        "schema": [
-            {
-                "id": "prop-status",
-                "name": "Status",
-                "type": "status",
-                "options": [
-                    {
-                        "id": "opt-todo",
-                        "name": "To Do",
-                        "color": "gray"
-                    },
-                    {
-                        "id": "opt-doing",
-                        "name": "In Progress",
-                        "color": "yellow"
-                    },
-                    {
-                        "id": "opt-done",
-                        "name": "Done",
-                        "color": "green"
-                    }
-                ]
-            },
-            {
-                "id": "prop-priority",
-                "name": "Priority",
-                "type": "select",
-                "options": [
-                    {
-                        "id": "opt-high",
-                        "name": "High",
-                        "color": "red"
-                    },
-                    {
-                        "id": "opt-medium",
-                        "name": "Medium",
-                        "color": "yellow"
-                    },
-                    {
-                        "id": "opt-low",
-                        "name": "Low",
-                        "color": "gray"
-                    }
-                ]
-            },
-            {
-                "id": "prop-tags",
-                "name": "Tags",
-                "type": "multi-select",
-                "options": [
-                    {
-                        "id": "opt-bug",
-                        "name": "Bug",
-                        "color": "red"
-                    },
-                    {
-                        "id": "opt-feature",
-                        "name": "Feature",
-                        "color": "blue"
-                    },
-                    {
-                        "id": "opt-devops",
-                        "name": "DevOps",
-                        "color": "purple"
-                    }
-                ]
-            },
-            {
-                "id": "prop-category",
-                "name": "Category",
-                "type": "select",
-                "options": [
-                    {
-                        "id": "opt-frontend",
-                        "name": "Frontend",
-                        "color": "blue"
-                    },
-                    {
-                        "id": "opt-backend",
-                        "name": "Backend",
-                        "color": "green"
-                    },
-                    {
-                        "id": "opt-design",
-                        "name": "Design",
-                        "color": "purple"
-                    },
-                    {
-                        "id": "opt-marketing",
-                        "name": "Marketing",
-                        "color": "pink"
-                    }
-                ]
-            },
-            {
-                "id": "prop-start",
-                "name": "Start Date",
-                "type": "date"
-            },
-            {
-                "id": "prop-due",
-                "name": "Due Date",
-                "type": "date"
-            }
+      },
+      {
+        "id": "prop-priority",
+        "name": "Priority",
+        "type": "select",
+        "options": [
+          {
+            "id": "opt-high",
+            "name": "High",
+            "color": "red"
+          },
+          {
+            "id": "opt-medium",
+            "name": "Medium",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-low",
+            "name": "Low",
+            "color": "gray"
+          }
         ]
-    }
+      },
+      {
+        "id": "prop-due",
+        "name": "Due Date",
+        "type": "date"
+      },
+      {
+        "id": "prop-owner",
+        "name": "Owner",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "db-tasks",
+    "name": "Tasks",
+    "description": "All tasks across projects",
+    "schema": [
+      {
+        "id": "prop-status",
+        "name": "Status",
+        "type": "status",
+        "options": [
+          {
+            "id": "opt-todo",
+            "name": "To Do",
+            "color": "gray"
+          },
+          {
+            "id": "opt-doing",
+            "name": "In Progress",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-done",
+            "name": "Done",
+            "color": "green"
+          }
+        ]
+      },
+      {
+        "id": "prop-priority",
+        "name": "Priority",
+        "type": "select",
+        "options": [
+          {
+            "id": "opt-high",
+            "name": "High",
+            "color": "red"
+          },
+          {
+            "id": "opt-medium",
+            "name": "Medium",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-low",
+            "name": "Low",
+            "color": "gray"
+          }
+        ]
+      },
+      {
+        "id": "prop-tags",
+        "name": "Tags",
+        "type": "multi-select",
+        "options": [
+          {
+            "id": "opt-bug",
+            "name": "Bug",
+            "color": "red"
+          },
+          {
+            "id": "opt-feature",
+            "name": "Feature",
+            "color": "blue"
+          },
+          {
+            "id": "opt-devops",
+            "name": "DevOps",
+            "color": "purple"
+          }
+        ]
+      },
+      {
+        "id": "prop-category",
+        "name": "Category",
+        "type": "select",
+        "options": [
+          {
+            "id": "opt-frontend",
+            "name": "Frontend",
+            "color": "blue"
+          },
+          {
+            "id": "opt-backend",
+            "name": "Backend",
+            "color": "green"
+          },
+          {
+            "id": "opt-design",
+            "name": "Design",
+            "color": "purple"
+          },
+          {
+            "id": "opt-marketing",
+            "name": "Marketing",
+            "color": "pink"
+          },
+          {
+            "id": "opt-3uxpyt",
+            "name": "Mobile App",
+            "color": "pink"
+          }
+        ]
+      },
+      {
+        "id": "prop-start",
+        "name": "Start Date",
+        "type": "date"
+      },
+      {
+        "id": "prop-due",
+        "name": "Due Date",
+        "type": "date"
+      }
+    ]
+  }
 ]

@@ -7,14 +7,14 @@
       "prop-status": "opt-done",
       "prop-start": "2025-11-13",
       "prop-due": "2026-03-08",
-      "prop-category": "",
+      "prop-category": "opt-3uxpyt",
       "prop-tags": [
         "opt-feature"
       ],
       "prop-priority": ""
     },
     "createdAt": "2026-02-05T09:10:15.738Z",
-    "updatedAt": "2026-02-23T08:54:36.388Z",
+    "updatedAt": "2026-03-11T06:25:12.715Z",
     "content": "# Release Notes\n- [x] Feature A\n- [ ] Feature B\n**Bold Text**\n\n\n "
   },
   {
