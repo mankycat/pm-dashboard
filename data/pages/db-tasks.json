@@ -96,9 +96,10 @@
     "title": "New Task",
     "properties": {
       "prop-status": "opt-doing",
-      "prop-project": "e1f482cf-5f1d-4f82-b417-7cdb9bbfc5fd"
+      "prop-project": "e1f482cf-5f1d-4f82-b417-7cdb9bbfc5fd",
+      "prop-start": "2026-03-30"
     },
     "createdAt": "2026-03-31T08:22:49.034Z",
-    "updatedAt": "2026-03-31T08:23:13.883Z"
+    "updatedAt": "2026-03-31T09:30:04.254Z"
   }
 ]
