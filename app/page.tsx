@@ -1,9 +1,11 @@
 import { fetchDatabases, fetchPages } from './actions';
 import DatabaseList from './components/DatabaseList';
 import DatabasePage from './components/DatabasePage';
+import ProjectDashboard from './components/ProjectDashboard';
 import { Database, Page } from '@/lib/data';
 import { Activity, CheckCircle2, Clock, LayoutGrid, List, Plus } from 'lucide-react';
 import Link from 'next/link';
+import WeeklyReportView from './components/WeeklyReportView';
 
 export default async function Home({
   searchParams,
@@ -13,35 +15,36 @@ export default async function Home({
   const databases = await fetchDatabases();
   const params = await searchParams;
   const databaseId = params['databaseId'] as string;
+  const projectId = params['projectId'] as string;
+  const view = params['view'] as string;
 
-  // Find active database
-  const activeDatabase = databaseId
-    ? databases.find(db => db.id === databaseId)
-    : undefined;
+  // Fetch all databases & pages upfront for the global dashboard/reports
+  const allPages = await Promise.all(
+    databases.map(async (db) => ({
+      db,
+      pages: await fetchPages(db.id),
+    }))
+  );
 
-  let pages: Page[] = [];
-  if (activeDatabase) {
-    pages = await fetchPages(activeDatabase.id);
-  }
+  const projectsDb = allPages.find(d => d.db.id === 'db-projects');
+  const projects = projectsDb ? projectsDb.pages : [];
 
-  // Dashboard Stats Logic
-  let allPages: { db: Database; pages: Page[] }[] = [];
-  if (!activeDatabase) {
-    // Fetch all data for dashboard
-    allPages = await Promise.all(
-      databases.map(async (db) => ({
-        db,
-        pages: await fetchPages(db.id),
-      }))
-    );
-  }
+  const activeProject = projectId ? projects.find(p => p.id === projectId) : undefined;
+  
+  // Backwards compatibility for raw database viewing if needed
+  const activeDatabase = databaseId ? databases.find(db => db.id === databaseId) : undefined;
+  const dbPages = activeDatabase ? allPages.find(d => d.db.id === activeDatabase.id)?.pages || [] : [];
 
   return (
     <div className="flex h-screen w-full overflow-hidden font-sans">
-      <DatabaseList databases={databases} />
+      <DatabaseList projects={projects} databases={databases} />
       <div className="flex-1 flex flex-col min-w-0 bg-white/50 relative">
-        {activeDatabase ? (
-          <DatabasePage database={activeDatabase} pages={pages} />
+        {activeProject ? (
+          <ProjectDashboard project={activeProject} databases={databases} allData={allPages} />
+        ) : view === 'report' ? (
+          <WeeklyReportView allData={allPages} />
+        ) : activeDatabase ? (
+          <DatabasePage database={activeDatabase} pages={dbPages} />
         ) : (
           <DashboardOverview allData={allPages} />
         )}

@@ -34,6 +34,7 @@ export default function TimelineView({
     const [localPages, setLocalPages] = useState<Page[]>(pages);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
+    const [groupByPropId, setGroupByPropId] = useState<string | null>(null);
     const chartRef = useRef<HTMLDivElement>(null);
 
     // Sync local pages
@@ -60,18 +61,20 @@ export default function TimelineView({
 
     const isSingleDateMode = startProp.id === endProp?.id;
 
-    // Optional: Find project or categories for grouping
-    const groupProp = database.schema.find(p => p.name.toLowerCase() === 'project' || p.name.toLowerCase() === 'category');
+    const groupableProps = database.schema.filter(p => ['select', 'status', 'person', 'text'].includes(p.type));
+    const activeGroupProp = groupByPropId 
+        ? database.schema.find(p => p.id === groupByPropId) 
+        : groupableProps.find(p => p.name.toLowerCase() === 'category' || p.name.toLowerCase() === 'project') || groupableProps[0];
 
     const groupedPages = useMemo(() => {
         const groups: Record<string, Page[]> = {};
-        if (groupProp) {
+        if (activeGroupProp) {
             localPages.forEach(p => {
-                const gVal = p.properties[groupProp.id];
+                const gVal = p.properties[activeGroupProp.id];
                 let gName = '';
                 if (gVal) {
-                    if (groupProp.type === 'select' && groupProp.options) {
-                        const opt = groupProp.options.find(o => o.id === gVal);
+                    if ((activeGroupProp.type === 'select' || activeGroupProp.type === 'status') && activeGroupProp.options) {
+                        const opt = activeGroupProp.options.find(o => o.id === gVal);
                         gName = opt ? opt.name : String(gVal);
                     } else {
                         gName = String(gVal);
@@ -85,7 +88,7 @@ export default function TimelineView({
             groups[''] = localPages;
         }
         return groups;
-    }, [localPages, groupProp]);
+    }, [localPages, activeGroupProp]);
 
     const { days, minDate } = useMemo(() => {
         const allDates = localPages.flatMap(p => {
@@ -238,8 +241,22 @@ export default function TimelineView({
             onDragEnd={handleDragEnd}
         >
             <div className="h-full overflow-auto flex flex-col p-8 bg-slate-50 relative">
-                {/* Export Button */}
-                <div className="absolute top-4 right-8 z-50">
+                {/* Controls Area */}
+                <div className="absolute top-4 right-8 z-50 flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-lg shadow-sm border border-gray-200 backdrop-blur-sm">
+                        <span className="text-sm font-medium text-gray-600">Group by:</span>
+                        <select 
+                            className="bg-transparent text-sm text-gray-800 font-semibold outline-none cursor-pointer"
+                            value={activeGroupProp?.id || ''}
+                            onChange={(e) => setGroupByPropId(e.target.value)}
+                        >
+                            <option value="">None</option>
+                            {groupableProps.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    
                     <button
                         onClick={handleExport}
                         disabled={isExporting}

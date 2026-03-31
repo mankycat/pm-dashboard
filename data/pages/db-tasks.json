@@ -68,5 +68,37 @@
     },
     "createdAt": "2026-02-23T04:04:40.453Z",
     "updatedAt": "2026-02-23T04:07:05.073Z"
+  },
+  {
+    "id": "84b8146c-d1d6-45e5-9a10-eda544acb3a9",
+    "databaseId": "db-tasks",
+    "title": "New Task",
+    "properties": {
+      "prop-status": "opt-todo"
+    },
+    "createdAt": "2026-03-31T07:28:28.361Z",
+    "updatedAt": "2026-03-31T07:28:28.361Z"
+  },
+  {
+    "id": "eb54c258-be52-438c-aef3-3d64afd8d5de",
+    "databaseId": "db-tasks",
+    "title": "New Task",
+    "properties": {
+      "prop-status": "opt-todo",
+      "prop-project": "e7a86e8e-58b2-4428-9c90-74d742bbd12e"
+    },
+    "createdAt": "2026-03-31T08:20:07.733Z",
+    "updatedAt": "2026-03-31T08:20:07.733Z"
+  },
+  {
+    "id": "b446a809-67fa-469b-894e-1ec48ed8748c",
+    "databaseId": "db-tasks",
+    "title": "New Task",
+    "properties": {
+      "prop-status": "opt-doing",
+      "prop-project": "e1f482cf-5f1d-4f82-b417-7cdb9bbfc5fd"
+    },
+    "createdAt": "2026-03-31T08:22:49.034Z",
+    "updatedAt": "2026-03-31T08:23:13.883Z"
   }
 ]

@@ -172,6 +172,218 @@
         "id": "prop-due",
         "name": "Due Date",
         "type": "date"
+      },
+      {
+        "id": "prop-owner",
+        "name": "Owner",
+        "type": "person"
+      },
+      {
+        "id": "prop-duration",
+        "name": "Dur. (Day)",
+        "type": "number"
+      },
+      {
+        "id": "prop-note",
+        "name": "Note",
+        "type": "text"
+      },
+      {
+        "id": "prop-project",
+        "name": "Project ID",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "db-issues",
+    "name": "Issue Tracker",
+    "description": "Track problems, risks, and temporary ad-hoc items",
+    "schema": [
+      {
+        "id": "prop-status",
+        "name": "Status",
+        "type": "status",
+        "options": [
+          {
+            "id": "opt-open",
+            "name": "Open",
+            "color": "red"
+          },
+          {
+            "id": "opt-ready",
+            "name": "Ready",
+            "color": "blue"
+          },
+          {
+            "id": "opt-in-progress",
+            "name": "In Progress",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-in-verification",
+            "name": "In Verification",
+            "color": "purple"
+          },
+          {
+            "id": "opt-to-be-verified",
+            "name": "To Be Verified",
+            "color": "pink"
+          },
+          {
+            "id": "opt-closed",
+            "name": "Closed",
+            "color": "gray"
+          },
+          {
+            "id": "opt-done",
+            "name": "Done",
+            "color": "green"
+          },
+          {
+            "id": "opt-cancelled",
+            "name": "Cancelled",
+            "color": "gray"
+          }
+        ]
+      },
+      {
+        "id": "prop-priority",
+        "name": "Priority",
+        "type": "select",
+        "options": [
+          {
+            "id": "opt-blocker",
+            "name": "Blocker",
+            "color": "red"
+          },
+          {
+            "id": "opt-critical",
+            "name": "Critical",
+            "color": "orange"
+          },
+          {
+            "id": "opt-major",
+            "name": "Major",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-minor",
+            "name": "Minor",
+            "color": "blue"
+          },
+          {
+            "id": "opt-trivial",
+            "name": "Trivial",
+            "color": "gray"
+          }
+        ]
+      },
+      {
+        "id": "prop-issue-desc",
+        "name": "Issue",
+        "type": "text"
+      },
+      {
+        "id": "prop-expected-outcome",
+        "name": "Expected Outcome",
+        "type": "text"
+      },
+      {
+        "id": "prop-reporter",
+        "name": "Reporter",
+        "type": "person"
+      },
+      {
+        "id": "prop-owner",
+        "name": "Owner",
+        "type": "person"
+      },
+      {
+        "id": "prop-category",
+        "name": "Category",
+        "type": "select",
+        "options": [
+          {
+            "id": "opt-admin",
+            "name": "行政作業",
+            "color": "blue"
+          },
+          {
+            "id": "opt-legal",
+            "name": "商務/法務",
+            "color": "pink"
+          },
+          {
+            "id": "opt-engineering",
+            "name": "工程作業",
+            "color": "green"
+          },
+          {
+            "id": "opt-meeting",
+            "name": "會議安排",
+            "color": "purple"
+          }
+        ]
+      },
+      {
+        "id": "prop-module",
+        "name": "Module",
+        "type": "text"
+      },
+      {
+        "id": "prop-checkpoint",
+        "name": "Checkpoint",
+        "type": "status",
+        "options": [
+          {
+            "id": "opt-cp-todo",
+            "name": "To Do",
+            "color": "gray"
+          },
+          {
+            "id": "opt-cp-in-progress",
+            "name": "In Progress",
+            "color": "yellow"
+          },
+          {
+            "id": "opt-cp-done",
+            "name": "Done",
+            "color": "green"
+          },
+          {
+            "id": "opt-cp-cancelled",
+            "name": "Cancelled",
+            "color": "gray"
+          }
+        ]
+      },
+      {
+        "id": "prop-project",
+        "name": "Project ID",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "db-2afbcc8f",
+    "name": "Test Issue DB",
+    "schema": []
+  },
+  {
+    "id": "db-reports",
+    "name": "Reports",
+    "description": "Weekly Project Summaries",
+    "schema": [
+      {
+        "id": "prop-project",
+        "name": "Project ID",
+        "type": "text"
+      },
+      {
+        "id": "prop-date",
+        "name": "Date Range",
+        "type": "text"
       }
     ]
   }

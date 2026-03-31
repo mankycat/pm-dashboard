@@ -1,7 +1,7 @@
 'use client';
 
-import { Database, Page } from '@/lib/data';
-import { updatePageProperty } from '@/app/actions';
+import { Database, Page, PropertySchema } from '@/lib/data';
+import { updatePageProperty, createPage } from '@/app/actions';
 import { useState, useTransition } from 'react';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -22,10 +22,12 @@ import { useDraggable } from '@dnd-kit/core';
 
 export default function KanbanView({
     database,
-    pages
+    pages,
+    activeProjectId
 }: {
     database: Database;
     pages: Page[];
+    activeProjectId?: string;
 }) {
     const statusProp = database.schema.find(p => p.type === 'status');
     const [isPending, startTransition] = useTransition();
@@ -112,6 +114,8 @@ export default function KanbanView({
                             column={col}
                             pages={columnPages}
                             database={database}
+                            statusProp={statusProp}
+                            activeProjectId={activeProjectId}
                         />
                     );
                 })}
@@ -125,10 +129,27 @@ export default function KanbanView({
     );
 }
 
-function KanbanColumn({ column, pages, database }: { column: any, pages: Page[], database: Database }) {
+function KanbanColumn({ column, pages, database, statusProp, activeProjectId }: { column: any, pages: Page[], database: Database, statusProp: PropertySchema, activeProjectId?: string }) {
     const { setNodeRef, isOver } = useDroppable({
         id: column.id,
     });
+    const [isPending, startTransition] = useTransition();
+
+    const handleAddTask = () => {
+        startTransition(async () => {
+            let initialProp: any = { [statusProp.id]: column.id };
+            
+            // If we are in a scoped project, auto associate this task
+            if (activeProjectId) {
+                const projectProp = database.schema.find(s => s.name === 'Project ID' || s.name === 'Project');
+                if (projectProp) {
+                    initialProp[projectProp.id] = activeProjectId;
+                }
+            }
+
+            await createPage(database.id, 'New Task', initialProp);
+        });
+    };
 
     return (
         <div className="w-72 flex-shrink-0 flex flex-col">
@@ -147,7 +168,12 @@ function KanbanColumn({ column, pages, database }: { column: any, pages: Page[],
                     <button className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors">
                         <MoreHorizontal className="w-4 h-4" />
                     </button>
-                    <button className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors">
+                    <button 
+                        onClick={handleAddTask}
+                        disabled={isPending}
+                        className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors disabled:opacity-50"
+                        title="Add Task"
+                    >
                         <Plus className="w-4 h-4" />
                     </button>
                 </div>

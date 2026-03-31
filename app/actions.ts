@@ -11,7 +11,9 @@ import {
   getDatabase,
   deletePage,
   updateDatabasePropertySchema,
-  PropertySchema
+  PropertySchema,
+  saveDatabase,
+  Database
 } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,14 +26,15 @@ export async function fetchPages(databaseId: string) {
   return await getPages(databaseId);
 }
 
-export async function createPage(databaseId: string, title: string) {
+export async function createPage(databaseId: string, title: string, initialProperties?: PropertyValue, content?: string) {
   if (!title) return;
 
   const newPage: Page = {
     id: uuidv4(),
     databaseId,
     title,
-    properties: {},
+    properties: initialProperties || {},
+    content,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -79,5 +82,37 @@ export async function updatePropertyOptionsAction(
   await updateDatabasePropertySchema(databaseId, propertyId, (prop) => {
     prop.options = options;
   });
+  revalidatePath('/');
+}
+
+export async function createDatabaseAction(name: string) {
+  if (!name) return;
+  const newDb: Database = {
+    id: `db-${uuidv4().substring(0, 8)}`,
+    name,
+    schema: [
+      {
+        id: `prop-${uuidv4().substring(0, 8)}`,
+        name: 'Status',
+        type: 'status',
+        options: [
+          { id: 'opt-1', name: 'To Do', color: 'gray' },
+          { id: 'opt-2', name: 'In Progress', color: 'blue' },
+          { id: 'opt-3', name: 'Done', color: 'green' }
+        ]
+      },
+      {
+        id: `prop-${uuidv4().substring(0, 8)}`,
+        name: 'Assignee',
+        type: 'person'
+      },
+      {
+        id: `prop-${uuidv4().substring(0, 8)}`,
+        name: 'Due Date',
+        type: 'date'
+      }
+    ] 
+  };
+  await saveDatabase(newDb);
   revalidatePath('/');
 }
