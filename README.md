@@ -19,17 +19,38 @@
 - [x] **Phase 4: UI - Visuals** (Gantt Chart, WBS Tree)
 - [x] **Phase 5: Deployment** (Codespaces Integration)
 
-## 🚀 快速開始
+## 🚀 環境部署與啟動指令
 
-1.  **安裝依賴**:
-    ```bash
-    npm install
-    ```
-2.  **啟動開發伺服器**:
-    ```bash
-    npm run dev
-    ```
-3.  **訪問**: `http://localhost:3000`
+1. **安裝依賴**:
+   ```bash
+   npm install
+   ```
+
+2. **開發環境 (Development)**:
+   ```bash
+   # 預設啟動 (Port 3000)
+   npm run dev
+
+   # 指定 Port 啟動 (例如 8080)
+   npm run dev -- -p 8080
+   ```
+
+3. **正式環境打包與發布 (Production / Deploy)**:
+   如果要將專案部署到正式環境，請先執行 `build` 進行打包，再執行 `start`。
+   ```bash
+   # 1. 打包編譯 (Package)
+   npm run build
+
+   # 2. 啟動正式伺服器 (預設 Port 3000)
+   npm run start
+
+   # 3. 指定 Port 啟動正式伺服器 (例如 8080)
+   # 方法 A: 透過 npm 參數向下傳遞
+   npm run start -- -p 8080
+   
+   # 方法 B: 透過環境變數指定
+   PORT=8080 npm run start
+   ```
 
 ## 🏗️ 架構說明
 
