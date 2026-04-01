@@ -51,21 +51,21 @@ export async function updatePageProperty(
 ) {
   await updatePage(databaseId, pageId, (page) => {
     page.properties[propertyId] = value;
-  });
+  }, `Updated property`);
   revalidatePath('/');
 }
 
 export async function updatePageTitle(databaseId: string, pageId: string, newTitle: string) {
   await updatePage(databaseId, pageId, (page) => {
     page.title = newTitle;
-  });
+  }, `Changed title to "${newTitle}"`);
   revalidatePath('/');
 }
 
 export async function updatePageContent(databaseId: string, pageId: string, content: string) {
   await updatePage(databaseId, pageId, (page) => {
     page.content = content;
-  });
+  }, `Updated description`);
   revalidatePath('/');
 }
 

@@ -1,18 +1,1 @@
-[
-  {
-    "id": "9dad3a32-9c16-4d42-b750-717a874ffa78",
-    "databaseId": "db-projects",
-    "title": "A Project",
-    "properties": {},
-    "createdAt": "2026-04-01T10:00:33.218Z",
-    "updatedAt": "2026-04-01T10:00:41.359Z"
-  },
-  {
-    "id": "4d4da993-aebb-4ac2-9a1b-141e7d2d0c34",
-    "databaseId": "db-projects",
-    "title": "B Project",
-    "properties": {},
-    "createdAt": "2026-04-01T10:00:34.452Z",
-    "updatedAt": "2026-04-01T10:00:45.631Z"
-  }
-]
+[]

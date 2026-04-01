@@ -2,8 +2,8 @@ import { fetchDatabases, fetchPages } from './actions';
 import DatabaseList from './components/DatabaseList';
 import DatabasePage from './components/DatabasePage';
 import ProjectDashboard from './components/ProjectDashboard';
-import { Database, Page } from '@/lib/data';
-import { Activity, CheckCircle2, Clock, LayoutGrid, List, Plus } from 'lucide-react';
+import { Database, Page, ActivityLog, getActivityLogs } from '@/lib/data';
+import { Activity, CheckCircle2, Clock, LayoutGrid, List, Plus, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
 import WeeklyReportView from './components/WeeklyReportView';
 
@@ -25,6 +25,7 @@ export default async function Home({
       pages: await fetchPages(db.id),
     }))
   );
+  const activityLogs = await getActivityLogs();
 
   const projectsDb = allPages.find(d => d.db.id === 'db-projects');
   const projects = projectsDb ? projectsDb.pages : [];
@@ -46,14 +47,14 @@ export default async function Home({
         ) : activeDatabase ? (
           <DatabasePage database={activeDatabase} pages={dbPages} allProjects={projects} />
         ) : (
-          <DashboardOverview allData={allPages} />
+          <DashboardOverview allData={allPages} logs={activityLogs} />
         )}
       </div>
     </div>
   );
 }
 
-function DashboardOverview({ allData }: { allData: { db: Database; pages: Page[] }[] }) {
+function DashboardOverview({ allData, logs }: { allData: { db: Database; pages: Page[] }[], logs: ActivityLog[] }) {
   // Compute Stats
   const projectsDb = allData.find(d => d.db.name === 'Projects');
   const tasksDb = allData.find(d => d.db.name === 'Tasks');
@@ -104,9 +105,7 @@ function DashboardOverview({ allData }: { allData: { db: Database; pages: Page[]
     return date >= today && date <= nextWeek;
   }).length || 0;
 
-  // Recent Activity (Sort by updatedAt)
-  const allItems = allData.flatMap(d => d.pages.map(p => ({ ...p, dbName: d.db.name })));
-  const recentItems = allItems.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
+  const recentItems = logs.slice(0, 5);
 
   return (
     <div className="h-full overflow-auto p-8">
@@ -145,21 +144,35 @@ function DashboardOverview({ allData }: { allData: { db: Database; pages: Page[]
             Recent Activity
           </h3>
           <div className="space-y-3">
-            {recentItems.map(item => (
-              <div key={item.id} className="flex items-center justify-between p-3 hover:bg-white/50 rounded-lg transition-colors group">
+            {recentItems.map(log => (
+              <div key={log.id} className="flex items-center justify-between p-3 hover:bg-white/50 rounded-lg transition-colors group">
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${item.dbName === 'Projects' ? 'bg-indigo-500' : 'bg-emerald-500'}`} />
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">{item.title || 'Untitled'}</p>
-                    <p className="text-xs text-gray-500">Updated {new Date(item.updatedAt).toLocaleDateString()}</p>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
+                    log.action === 'create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                    log.action.includes('delete') ? 'bg-red-50 text-red-600 border-red-100' :
+                    'bg-amber-50 text-amber-600 border-amber-100'
+                  }`}>
+                    {log.action === 'create' ? <Plus className="w-4 h-4" /> :
+                     log.action.includes('delete') ? <Trash2 className="w-4 h-4" /> :
+                     <Edit className="w-4 h-4" />}
+                  </div>
+                  <div className="truncate max-w-[200px] xl:max-w-[280px]">
+                    <p className="font-medium text-gray-900 text-sm truncate">
+                       {log.action === 'create' ? 'Created ' : log.action.includes('delete') ? 'Deleted ' : 'Updated '}
+                       {log.entityTitle || 'Untitled'}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                        {new Date(log.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        {log.details ? ` · ${log.details}` : ''}
+                    </p>
                   </div>
                 </div>
-                <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded text-gray-600 group-hover:bg-white transition-colors">
-                  {item.dbName}
+                <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded text-gray-600 group-hover:bg-white transition-colors capitalize shrink-0 ml-2">
+                  {log.entityType}
                 </span>
               </div>
             ))}
-            {recentItems.length === 0 && <p className="text-sm text-gray-500">No activity yet.</p>}
+            {recentItems.length === 0 && <p className="text-sm text-gray-500">No recent activity.</p>}
           </div>
         </div>
 
