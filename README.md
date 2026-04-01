@@ -18,6 +18,7 @@
 - [x] **Phase 3: UI - List View** (Project CRUD, Task CRUD)
 - [x] **Phase 4: UI - Visuals** (Gantt Chart, WBS Tree)
 - [x] **Phase 5: Deployment** (Codespaces Integration)
+- [x] **Phase 6: Advanced UX** (Activity Logging, Batch & Cascading Deletion, Project Dropdowns)
 
 ## 🚀 環境部署與啟動指令
 

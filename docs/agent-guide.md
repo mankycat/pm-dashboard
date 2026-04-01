@@ -20,6 +20,11 @@ Contains the actual items (records).
     - `title`: String.
     - `properties`: Object mapping `propertyId` to values.
 
+### 3. Activity Logs (`data/activity_logs.json`)
+Contains an authentic audit log of all CRUD actions performed on the dashboard.
+- **Format**: JSON Array of `ActivityLog` objects.
+- **Usage**: Agents can read this file to parse a historical timeline of recent tasks updated, created, or deleted by the user or the system.
+
 ## Interaction Protocol
 
 ### Reading Data
@@ -28,14 +33,17 @@ To get context, an agent should:
 2.  Read `data/pages/{databaseId}.json` to get the actual data.
 
 ### Writing Data
-Agents should prefer using the provided **Server Actions** or **Tool Wrappers** if available (to handle locking/concurrency).
-If editing JSON files directly (e.g. via `sed` or `write_to_file`), **BEWARE OF RACE CONDITIONS**.
-*The system now implements a mutex lock for API calls, but direct file edits bypass this.*
+To prevent file collision and to ensure that actions are correctly logged to the `activity_logs.json`, agents MUST prioritize using the native local REST API (`curl http://localhost:3000/api/...`) instead of modifying files directly.
+- **Available APIs**: `GET`, `POST`, `PATCH`, and `DELETE` on `/api/pages`.
+- This automatically triggers the dashboard's internal mutation logic and updates the audit log securely without race conditions.
 
-**Safe Pattern:**
+If editing JSON files directly (e.g. via `write_to_file`), **BEWARE OF RACE CONDITIONS AND AUDIT LOG DESYNCS**.
+
+**Safe Pattern (If API is strictly unavailable):**
 1.  Read file.
 2.  Apply change in memory.
 3.  Write file back (atomic write preferred).
+4.  Optionally manually prepend the new event to `activity_logs.json`.
 
 ## Automated Tasks
 

@@ -85,9 +85,21 @@ Fetch this to understand the UUID keys for each property (like Status, Assignee,
     }'
   ```
 
+### 5. Delete a Page (Task/Project/Issue)
+- **Command Example:**
+  ```bash
+  curl -s -X DELETE http://localhost:3000/api/pages \
+    -H "Content-Type: application/json" \
+    -d '{
+      "databaseId": "db-tasks",
+      "pageId": "Page-UUID-Here"
+    }'
+  ```
+
 ## Working Protocol
 
 1. **When Asked to List Tasks:** First `curl /api/databases` to get the database schemas and Property IDs. Then `curl /api/pages?databaseId=db-tasks`.
 2. **When Asked to Create a Project/Task:** Always fetch the target Database Schema first to ensure you map your properties to the correct `prop-XXX` UUIDs. Then fire the `POST /api/pages` request.
-3. **DO NOT MODIFY JSON FILES:** Never use file manipulation tools (`sed`, `echo`, node scripts) to bypass the API. Always use `curl`.
+3. **When Asked to Delete an Entity:** Obtain the `pageId` and `databaseId` first, then securely use the `DELETE /api/pages` API.
+4. **DO NOT MODIFY JSON FILES:** Never use file manipulation tools (`sed`, `echo`, node scripts) to bypass the API. Always use `curl`.
 ```
