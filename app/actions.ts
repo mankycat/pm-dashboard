@@ -8,6 +8,7 @@ import {
   Page,
   PropertyValue,
   deletePage,
+  deletePages,
   updateDatabasePropertySchema,
   PropertySchema,
   saveDatabase,
@@ -73,6 +74,11 @@ export async function deletePageAction(databaseId: string, pageId: string) {
   revalidatePath('/');
 }
 
+export async function batchDeletePagesAction(databaseId: string, pageIds: string[]) {
+  await deletePages(databaseId, pageIds);
+  revalidatePath('/');
+}
+
 export async function updatePropertyOptionsAction(
   databaseId: string,
   propertyId: string,
@@ -113,5 +119,31 @@ export async function createDatabaseAction(name: string) {
     ] 
   };
   await saveDatabase(newDb);
+  revalidatePath('/');
+}
+
+export async function deleteProjectWithCascade(projectId: string) {
+  const dbs = await getDatabases();
+  
+  // Clean up children from all dbs
+  for (const db of dbs) {
+    if (db.id === 'db-projects') continue;
+    
+    // Look for properties that might link to a project
+    const projectProp = db.schema.find(s => s.name === 'Project ID' || s.name === 'Project');
+    if (projectProp) {
+      const pages = await getPages(db.id);
+      const toDelete = pages.filter(p => p.properties[projectProp.id] === projectId);
+      
+      for (const p of toDelete) {
+        await deletePage(db.id, p.id);
+      }
+    }
+  }
+  
+  // Delete the project itself
+  await deletePage('db-projects', projectId);
+  
+  // Refresh UI
   revalidatePath('/');
 }

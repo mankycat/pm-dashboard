@@ -12,10 +12,12 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 export default function DatabasePage({
     database,
-    pages
+    pages,
+    allProjects
 }: {
     database: Database;
     pages: Page[];
+    allProjects: Page[];
 }) {
     const [viewMode, setViewMode] = useState<'table' | 'kanban' | 'timeline'>('table');
     const searchParams = useSearchParams();
@@ -204,7 +206,7 @@ export default function DatabasePage({
 
             {/* Content */}
             <div className="flex-1 overflow-hidden relative">
-                {viewMode === 'table' && <DatabaseView database={database} pages={filteredPages} />}
+                {viewMode === 'table' && <DatabaseView database={database} pages={filteredPages} allProjects={allProjects} />}
                 {viewMode === 'kanban' && <KanbanView database={database} pages={filteredPages} />}
                 {viewMode === 'timeline' && <TimelineView database={database} pages={filteredPages} />}
             </div>
@@ -215,6 +217,7 @@ export default function DatabasePage({
                 onClose={handleCloseModal}
                 database={database}
                 page={selectedPage}
+                allProjects={allProjects}
             />
         </div>
     );

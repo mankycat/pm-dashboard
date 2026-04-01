@@ -1,21 +1,25 @@
 'use client';
 
 import { Database, Page } from '@/lib/data';
-import { createPage, updatePageProperty, updatePageTitle } from '@/app/actions';
-import { useState } from 'react';
-import { Plus, Calendar, User, Tag, CheckCircle2, Layers } from 'lucide-react';
+import { createPage, updatePageProperty, updatePageTitle, batchDeletePagesAction } from '@/app/actions';
+import { useState, useTransition } from 'react';
+import { Plus, Calendar, User, Tag, CheckCircle2, Layers, Trash2 } from 'lucide-react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 export default function DatabaseView({
     database,
-    pages
+    pages,
+    allProjects
 }: {
     database: Database;
     pages: Page[];
+    allProjects?: Page[];
 }) {
     const [isCreating, setIsCreating] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [sortBy, setSortBy] = useState<string | null>(null);
     const [sortAsc, setSortAsc] = useState(true);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -53,7 +57,30 @@ export default function DatabaseView({
         return sortAsc ? cmp : -cmp;
     });
 
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setSelectedIds(new Set(sortedPages.map(p => p.id)));
+        } else {
+            setSelectedIds(new Set());
+        }
+    };
 
+    const handleSelect = (id: string, checked: boolean) => {
+        const newSet = new Set(selectedIds);
+        if (checked) newSet.add(id);
+        else newSet.delete(id);
+        setSelectedIds(newSet);
+    };
+
+    const handleBatchDelete = () => {
+        if (selectedIds.size === 0) return;
+        if (confirm(`Are you sure you want to delete the ${selectedIds.size} selected items?`)) {
+            startTransition(async () => {
+                await batchDeletePagesAction(database.id, Array.from(selectedIds));
+                setSelectedIds(new Set());
+            });
+        }
+    };
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
@@ -66,6 +93,16 @@ export default function DatabaseView({
                     )}
                 </div>
                 <div className="flex items-center gap-3">
+                    {selectedIds.size > 0 && (
+                        <button
+                            onClick={handleBatchDelete}
+                            disabled={isPending}
+                            className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg shadow-sm transition-colors text-sm font-medium border border-red-200 disabled:opacity-50"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Delete Selected ({selectedIds.size})
+                        </button>
+                    )}
                     <button
                         onClick={async () => {
                             setIsCreating(true);
@@ -87,6 +124,14 @@ export default function DatabaseView({
                     <table className="min-w-full divide-y divide-gray-100">
                         <thead className="bg-gray-50/50">
                             <tr>
+                                <th className="px-6 py-4 w-12 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4"
+                                        checked={sortedPages.length > 0 && selectedIds.size === sortedPages.length}
+                                        onChange={handleSelectAll}
+                                    />
+                                </th>
                                 <th
                                     className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/3 cursor-pointer hover:text-gray-700"
                                     onClick={() => handleSort('title')}
@@ -124,6 +169,14 @@ export default function DatabaseView({
                                     }}
                                     className="hover:bg-indigo-50/40 transition-colors group cursor-pointer"
                                 >
+                                    <td className="px-6 py-4 whitespace-nowrap text-center" onClick={e => e.stopPropagation()}>
+                                        <input 
+                                            type="checkbox" 
+                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4"
+                                            checked={selectedIds.has(page.id)}
+                                            onChange={(e) => handleSelect(page.id, e.target.checked)}
+                                        />
+                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 group-hover:text-indigo-900">
                                         <input
                                             type="text"
@@ -146,9 +199,11 @@ export default function DatabaseView({
                                                         databaseId={database.id}
                                                         pageId={page.id}
                                                         propertyId={prop.id}
+                                                        property={prop}
                                                         type={prop.type}
                                                         options={prop.options}
                                                         value={value}
+                                                        allProjects={allProjects}
                                                     />
                                                 </div>
                                             </td>
@@ -158,7 +213,7 @@ export default function DatabaseView({
                             ))}
                             {pages.length === 0 && (
                                 <tr>
-                                    <td colSpan={database.schema.length + 1} className="px-6 py-16 text-center">
+                                    <td colSpan={database.schema.length + 2} className="px-6 py-16 text-center">
                                         <div className="flex flex-col items-center justify-center text-gray-400">
                                             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                                                 <Layers className="w-6 h-6 text-gray-300" />
@@ -201,21 +256,42 @@ function getIconForType(type: string) {
 }
 
 function PropertyCell({
-    databaseId, pageId, propertyId, type, options, value
+    databaseId, pageId, propertyId, property, type, options, value, allProjects
 }: {
     databaseId: string;
     pageId: string;
     propertyId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    property?: any;
     type: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options?: any[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any;
+    allProjects?: Page[];
 }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = async (newValue: any) => {
         await updatePageProperty(databaseId, pageId, propertyId, newValue);
     };
+
+    if (property && (property.name === 'Project ID' || property.name === 'Project')) {
+        return (
+            <div className="relative">
+                <select
+                    value={value || ''}
+                    onChange={(e) => handleChange(e.target.value)}
+                    className="block w-full text-xs font-medium border-0 rounded-full py-1 pl-2 pr-8 focus:ring-0 cursor-pointer appearance-none transition-all bg-transparent"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <option value="">Empty</option>
+                    {allProjects?.map(proj => (
+                        <option key={proj.id} value={proj.id}>{proj.title}</option>
+                    ))}
+                </select>
+            </div>
+        );
+    }
 
     if (type === 'status' || type === 'select') {
         const selectedOption = options?.find(o => o.id === value);

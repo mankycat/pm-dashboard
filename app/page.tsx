@@ -44,7 +44,7 @@ export default async function Home({
         ) : view === 'report' ? (
           <WeeklyReportView allData={allPages} />
         ) : activeDatabase ? (
-          <DatabasePage database={activeDatabase} pages={dbPages} />
+          <DatabasePage database={activeDatabase} pages={dbPages} allProjects={projects} />
         ) : (
           <DashboardOverview allData={allPages} />
         )}

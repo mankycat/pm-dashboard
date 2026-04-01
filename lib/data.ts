@@ -189,3 +189,12 @@ export async function deletePage(databaseId: string, pageId: string) {
     await writeJson(filePath, filtered);
   });
 }
+
+export async function deletePages(databaseId: string, pageIds: string[]) {
+  await withLock(async () => {
+    const filePath = getPageFilePath(databaseId);
+    const pages = await readJson<Page[]>(filePath, []);
+    const filtered = pages.filter(p => !pageIds.includes(p.id));
+    await writeJson(filePath, filtered);
+  });
+}

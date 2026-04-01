@@ -1,9 +1,9 @@
 'use client';
 
 import { Database, Page } from '@/lib/data';
-import { CalendarDays, Copy, CheckCircle2, Save, History, Loader2 } from 'lucide-react';
+import { CalendarDays, Copy, CheckCircle2, Save, History, Loader2, Trash2 } from 'lucide-react';
 import { useState, useTransition } from 'react';
-import { createPage } from '../actions';
+import { createPage, deletePageAction } from '../actions';
 
 export default function WeeklyReportView({ allData, activeProject }: { allData: { db: Database; pages: Page[] }[], activeProject?: Page }) {
     const [copied, setCopied] = useState(false);
@@ -256,8 +256,24 @@ ${activeIssues.length > 0 ? activeIssues.map((t, i) => {
             ) : (
                 <div className="max-w-4xl mx-auto space-y-6">
                     {historicalReports.map(report => (
-                        <div key={report.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-xl font-bold text-gray-900 border-b pb-2 mb-4">{report.title}</h3>
+                        <div key={report.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative group">
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Are you sure you want to delete this report?')) {
+                                            startTransition(async () => {
+                                                await deletePageAction('db-reports', report.id);
+                                            });
+                                        }
+                                    }}
+                                    disabled={isPending}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
+                                    title="Delete Report"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 border-b pb-2 mb-4 pr-8">{report.title}</h3>
                             <div className="prose prose-sm font-sans text-gray-700 mb-4 whitespace-pre-wrap leading-tight">
                                 {report.content}
                             </div>

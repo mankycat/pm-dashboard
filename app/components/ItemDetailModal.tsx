@@ -13,12 +13,14 @@ export default function ItemDetailModal({
     database,
     page,
     isOpen,
-    onClose
+    onClose,
+    allProjects
 }: {
     database: Database;
     page?: Page;
     isOpen: boolean;
     onClose: () => void;
+    allProjects?: Page[];
 }) {
     const [title, setTitle] = useState(page?.title || '');
     const [content, setContent] = useState(page?.content || '');
@@ -131,6 +133,7 @@ export default function ItemDetailModal({
                                                             pageId={page.id}
                                                             property={prop}
                                                             value={page.properties[prop.id]}
+                                                            allProjects={allProjects}
                                                         />
                                                     </div>
                                                 </div>
@@ -201,13 +204,30 @@ function getIconForType(type: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function PropertyInput({ databaseId, pageId, property, value }: { databaseId: string, pageId: string, property: any, value: any }) {
+function PropertyInput({ databaseId, pageId, property, value, allProjects }: { databaseId: string, pageId: string, property: any, value: any, allProjects?: Page[] }) {
     const [isEditorOpen, setIsEditorOpen] = useState(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = async (newValue: any) => {
         await updatePageProperty(databaseId, pageId, property.id, newValue);
     };
+
+    if (property.name === 'Project ID' || property.name === 'Project') {
+        return (
+            <select
+                value={value || ''}
+                onChange={(e) => handleChange(e.target.value)}
+                className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-transparent"
+            >
+                <option value="">Empty</option>
+                {allProjects?.map((proj) => (
+                    <option key={proj.id} value={proj.id}>
+                        {proj.title}
+                    </option>
+                ))}
+            </select>
+        );
+    }
 
     if (property.type === 'status' || property.type === 'select') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

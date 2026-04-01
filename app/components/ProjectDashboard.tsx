@@ -1,8 +1,9 @@
 'use client';
 
 import { Database, Page } from '@/lib/data';
-import { useState } from 'react';
-import { Kanban, Calendar as CalendarIcon, FileText, CheckCircle2 } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { deleteProjectWithCascade } from '@/app/actions';
+import { Kanban, Calendar as CalendarIcon, FileText, CheckCircle2, Trash2 } from 'lucide-react';
 import KanbanView from './KanbanView';
 import TimelineView from './TimelineView';
 import WeeklyReportView from './WeeklyReportView';
@@ -17,6 +18,7 @@ export default function ProjectDashboard({
     allData: { db: Database; pages: Page[] }[];
 }) {
     const [activeTab, setActiveTab] = useState<'board' | 'timeline' | 'issues' | 'reports'>('board');
+    const [isPending, startTransition] = useTransition();
 
     const tasksDb = allData.find(d => d.db.id === 'db-tasks')?.db;
     const issuesDb = allData.find(d => d.db.id === 'db-issues')?.db;
@@ -48,6 +50,15 @@ export default function ProjectDashboard({
         router.replace(`${pathname}?${params.toString()}`);
     };
 
+    const handleDeleteProject = () => {
+        if (confirm(`Are you sure you want to delete the project "${project.title}"? This will ALSO delete all related Tasks, Issues, and Weekly Reports! This action cannot be undone.`)) {
+            startTransition(async () => {
+                await deleteProjectWithCascade(project.id);
+                router.replace('/');
+            });
+        }
+    };
+
     // Filter by Project
     const projectTasks = allTasks.filter(t => {
         const projProp = tasksDb?.schema.find(s => s.name === 'Project ID' || s.name === 'Project');
@@ -69,7 +80,8 @@ export default function ProjectDashboard({
                     </h1>
                 </div>
 
-                <div className="flex bg-gray-100 p-1 rounded-lg">
+                <div className="flex items-center gap-4">
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
                     <button
                         onClick={() => setActiveTab('board')}
                         className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'board' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
@@ -97,6 +109,15 @@ export default function ProjectDashboard({
                             }`}
                     >
                         <FileText className="w-4 h-4" /> Weekly Reports
+                    </button>
+                    </div>
+                    <button
+                        onClick={handleDeleteProject}
+                        disabled={isPending}
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors disabled:opacity-50"
+                        title="Delete Project and all its data"
+                    >
+                        <Trash2 className="w-4 h-4" /> Delete Project
                     </button>
                 </div>
             </header>
