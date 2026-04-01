@@ -22,8 +22,8 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({ success: true, pages });
-    } catch (error: any) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
 
@@ -50,8 +50,8 @@ export async function POST(request: Request) {
 
         await createPageInDb(newPage);
         return NextResponse.json({ success: true, page: newPage });
-    } catch (error: any) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
 
@@ -66,7 +66,7 @@ export async function PATCH(request: Request) {
             return NextResponse.json({ success: false, error: 'databaseId and pageId are required' }, { status: 400 });
         }
 
-        let updatedProps: any = null;
+        let updatedProps: unknown = null;
 
         await updatePage(databaseId, pageId, (page) => {
             if (title !== undefined) page.title = title;
@@ -78,8 +78,8 @@ export async function PATCH(request: Request) {
         });
 
         return NextResponse.json({ success: true, page: updatedProps });
-    } catch (error: any) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
 
@@ -96,7 +96,7 @@ export async function DELETE(request: Request) {
 
         await deletePage(databaseId, pageId);
         return NextResponse.json({ success: true });
-    } catch (error: any) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }

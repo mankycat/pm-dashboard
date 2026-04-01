@@ -24,6 +24,7 @@ export interface Database {
 }
 
 export interface PropertyValue {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [propertyId: string]: any;
 }
 
@@ -57,11 +58,12 @@ async function readJson<T>(filePath: string, defaultValue: T): Promise<T> {
   try {
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data) as T;
-  } catch (error) {
+  } catch {
     return defaultValue;
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function writeJson(filePath: string, data: any) {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }

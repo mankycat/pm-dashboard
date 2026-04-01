@@ -2,7 +2,7 @@
 
 import { Database, Page } from '@/lib/data';
 import { useState } from 'react';
-import { Kanban, List as ListIcon, Calendar as CalendarIcon, FileText, CheckCircle2 } from 'lucide-react';
+import { Kanban, Calendar as CalendarIcon, FileText, CheckCircle2 } from 'lucide-react';
 import KanbanView from './KanbanView';
 import TimelineView from './TimelineView';
 import WeeklyReportView from './WeeklyReportView';
@@ -11,11 +11,9 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 export default function ProjectDashboard({
     project,
-    databases,
-    allData,
+        allData,
 }: {
     project: Page;
-    databases: Database[];
     allData: { db: Database; pages: Page[] }[];
 }) {
     const [activeTab, setActiveTab] = useState<'board' | 'timeline' | 'issues' | 'reports'>('board');

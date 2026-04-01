@@ -40,7 +40,7 @@ export default async function Home({
       <DatabaseList projects={projects} databases={databases} />
       <div className="flex-1 flex flex-col min-w-0 bg-white/50 relative">
         {activeProject ? (
-          <ProjectDashboard project={activeProject} databases={databases} allData={allPages} />
+          <ProjectDashboard project={activeProject} allData={allPages} />
         ) : view === 'report' ? (
           <WeeklyReportView allData={allPages} />
         ) : activeDatabase ? (
@@ -112,7 +112,7 @@ function DashboardOverview({ allData }: { allData: { db: Database; pages: Page[]
     <div className="h-full overflow-auto p-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Welcome back! Here's what's happening today.</p>
+        <p className="text-gray-500">Welcome back! Here&apos;s what&apos;s happening today.</p>
       </header>
 
       {/* Stats Grid */}
@@ -195,7 +195,7 @@ function DashboardOverview({ allData }: { allData: { db: Database; pages: Page[]
   );
 }
 
-function StatCard({ title, value, icon, trend }: { title: string, value: number, icon: any, trend: string }) {
+function StatCard({ title, value, icon, trend }: { title: string, value: number, icon: React.ReactNode, trend: string }) {
   return (
     <div className="bg-white/70 backdrop-blur-md rounded-xl p-5 border border-white/50 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-2">

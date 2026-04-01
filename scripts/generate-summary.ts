@@ -52,13 +52,15 @@ async function generateSummary() {
         };
 
         // Helper to get due date
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getDueDate = (props: any) => {
             const prop = tasksDb.schema.find(p => p.name === 'Due Date');
             return prop ? (props[prop.id] || '-') : '-';
         };
 
         for (const task of activeTasks) {
-            report += `| ${task.title} | ${getStatusName(task.properties[tasksDb.schema.find(p => p.name === 'Status')?.id!])} | ${getDueDate(task.properties)} |\n`;
+            const statusPropId = tasksDb.schema.find(p => p.name === 'Status')?.id || '';
+            report += `| ${task.title} | ${getStatusName(task.properties[statusPropId])} | ${getDueDate(task.properties)} |\n`;
         }
     }
 

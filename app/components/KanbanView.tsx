@@ -16,7 +16,7 @@ import {
     DragEndEvent,
     DragStartEvent,
 } from '@dnd-kit/core';
-import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import { useDraggable } from '@dnd-kit/core';
 
@@ -36,21 +36,6 @@ export default function KanbanView({
     // Optimistic UI state for faster perceived drag-and-drop
     const [localPages, setLocalPages] = useState<Page[]>(pages);
 
-    // Sync local pages if upstream pages change
-    if (pages !== localPages && !isPending) {
-        setLocalPages(pages);
-    }
-
-    if (!statusProp) {
-        return (
-            <div className="flex items-center justify-center h-full text-gray-500">
-                This database doesn't have a Status property to group by.
-            </div>
-        );
-    }
-
-    const columns = statusProp.options || [];
-
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -61,6 +46,21 @@ export default function KanbanView({
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    // Sync local pages if upstream pages change
+    if (pages !== localPages && !isPending) {
+        setLocalPages(pages);
+    }
+
+    if (!statusProp) {
+        return (
+            <div className="flex items-center justify-center h-full text-gray-500">
+                This database doesn&apos;t have a Status property to group by.
+            </div>
+        );
+    }
+
+    const columns = statusProp.options || [];
 
     const handleDragStart = (event: DragStartEvent) => {
         setActiveId(event.active.id as string);
@@ -129,7 +129,7 @@ export default function KanbanView({
     );
 }
 
-function KanbanColumn({ column, pages, database, statusProp, activeProjectId }: { column: any, pages: Page[], database: Database, statusProp: PropertySchema, activeProjectId?: string }) {
+function KanbanColumn({ column, pages, database, statusProp, activeProjectId }: { column: { id: string, name: string, color?: string }, pages: Page[], database: Database, statusProp: PropertySchema, activeProjectId?: string }) {
     const { setNodeRef, isOver } = useDroppable({
         id: column.id,
     });
@@ -137,7 +137,7 @@ function KanbanColumn({ column, pages, database, statusProp, activeProjectId }: 
 
     const handleAddTask = () => {
         startTransition(async () => {
-            let initialProp: any = { [statusProp.id]: column.id };
+            const initialProp: Record<string, string> = { [statusProp.id]: column.id };
             
             // If we are in a scoped project, auto associate this task
             if (activeProjectId) {
@@ -227,7 +227,7 @@ function KanbanCard({ page, database, isOverlay = false, isDragging = false }: {
 
     return (
         <div
-            onClick={(e) => {
+            onClick={() => {
                 if (isDragging) return;
                 const params = new URLSearchParams(searchParams);
                 params.set('itemId', page.id);

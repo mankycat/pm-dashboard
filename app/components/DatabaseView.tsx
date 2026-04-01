@@ -3,7 +3,7 @@
 import { Database, Page } from '@/lib/data';
 import { createPage, updatePageProperty, updatePageTitle } from '@/app/actions';
 import { useState } from 'react';
-import { Plus, Search, Filter, MoreHorizontal, Calendar, User, Tag, CheckCircle2, Layers } from 'lucide-react';
+import { Plus, Calendar, User, Tag, CheckCircle2, Layers } from 'lucide-react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 export default function DatabaseView({
@@ -53,14 +53,7 @@ export default function DatabaseView({
         return sortAsc ? cmp : -cmp;
     });
 
-    const SortIcon = ({ propId }: { propId: string }) => {
-        if (sortBy !== propId) return null;
-        return (
-            <span className="text-indigo-500 ml-1">
-                {sortAsc ? '↑' : '↓'}
-            </span>
-        );
-    };
+
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
@@ -100,7 +93,7 @@ export default function DatabaseView({
                                 >
                                     <div className="flex items-center">
                                         Name
-                                        <SortIcon propId="title" />
+                                        {sortBy === 'title' && <span className="text-indigo-500 ml-1">{sortAsc ? '↑' : '↓'}</span>}
                                     </div>
                                 </th>
                                 {database.schema.map(prop => (
@@ -112,7 +105,7 @@ export default function DatabaseView({
                                         <div className="flex items-center gap-2">
                                             {getIconForType(prop.type)}
                                             {prop.name}
-                                            <SortIcon propId={prop.id} />
+                                            {sortBy === prop.id && <span className="text-indigo-500 ml-1">{sortAsc ? '↑' : '↓'}</span>}
                                         </div>
                                     </th>
                                 ))}
@@ -214,9 +207,12 @@ function PropertyCell({
     pageId: string;
     propertyId: string;
     type: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options?: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any;
 }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = async (newValue: any) => {
         await updatePageProperty(databaseId, pageId, propertyId, newValue);
     };

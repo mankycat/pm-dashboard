@@ -4,7 +4,6 @@ import { Database, Page } from '@/lib/data';
 import { CalendarDays, Copy, CheckCircle2, Save, History, Loader2 } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { createPage } from '../actions';
-import ReactMarkdown from 'react-markdown';
 
 export default function WeeklyReportView({ allData, activeProject }: { allData: { db: Database; pages: Page[] }[], activeProject?: Page }) {
     const [copied, setCopied] = useState(false);
@@ -71,7 +70,7 @@ export default function WeeklyReportView({ allData, activeProject }: { allData: 
     const lastWeekCompleted = tasks.filter(task => {
         if (!isDone(task, tasksDb!.db)) return false;
         // Check updated at or due date
-        let dateProp = tasksDb?.db.schema.find(s => s.name.includes('Due'));
+        const dateProp = tasksDb?.db.schema.find(s => s.name.includes('Due'));
         const dateStr = dateProp ? task.properties[dateProp.id] : null;
         const date = parseDateLocal(dateStr);
         if (date) {
@@ -87,8 +86,8 @@ export default function WeeklyReportView({ allData, activeProject }: { allData: 
         if (isDone(task, tasksDb!.db)) return false;
         
         // Items that are touching this week
-        let startProp = tasksDb?.db.schema.find(s => s.name.includes('Start'));
-        let dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
+        const startProp = tasksDb?.db.schema.find(s => s.name.includes('Start'));
+        const dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
         
         const start = parseDateLocal(startProp ? task.properties[startProp.id] : null);
         const end = parseDateLocal(dueProp ? task.properties[dueProp.id] : null);
@@ -113,7 +112,7 @@ export default function WeeklyReportView({ allData, activeProject }: { allData: 
     const nextThreeWeeksItems = tasks.filter(task => {
         if (isDone(task, tasksDb!.db)) return false;
         
-        let startProp = tasksDb?.db.schema.find(s => s.name.includes('Start'));
+        const startProp = tasksDb?.db.schema.find(s => s.name.includes('Start'));
         const start = parseDateLocal(startProp ? task.properties[startProp.id] : null);
         
         const nextWeek = new Date(today);
@@ -124,7 +123,7 @@ export default function WeeklyReportView({ allData, activeProject }: { allData: 
         }
 
         // Include due soon things
-        let dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
+        const dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
         const end = parseDateLocal(dueProp ? task.properties[dueProp.id] : null);
 
         if (end && end >= nextWeek && end <= nextThreeWeeks) {
@@ -147,8 +146,8 @@ ${lastWeekCompleted.length > 0 ? lastWeekCompleted.map((t, i) => `${i + 1}. **${
 
 ## 本週執行事項 (This Week Ongoing)
 ${thisWeekItems.length > 0 ? thisWeekItems.map((t, i) => {
-    let dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
-    let noteProp = tasksDb?.db.schema.find(s => s.name === 'Note');
+    const dueProp = tasksDb?.db.schema.find(s => s.name.includes('Due') || s.name.includes('End'));
+    const noteProp = tasksDb?.db.schema.find(s => s.name === 'Note');
     const due = dueProp ? t.properties[dueProp.id] : '';
     const note = noteProp ? t.properties[noteProp.id] : '';
     return `${i + 1}. **${t.title}**${due ? ` (預計 ${due} 完成)` : ''}${note ? ` : ${note}` : ''}`;
@@ -159,7 +158,7 @@ ${nextThreeWeeksItems.length > 0 ? nextThreeWeeksItems.map((t, i) => `${i + 1}. 
 
 ## 臨時動議事項追蹤 (Issue Tracking)
 ${activeIssues.length > 0 ? activeIssues.map((t, i) => {
-    let issueDescProp = issuesDb?.db.schema.find(s => s.name === 'Issue');
+    const issueDescProp = issuesDb?.db.schema.find(s => s.name === 'Issue');
     const desc = issueDescProp ? t.properties[issueDescProp.id] : '';
     return `${i + 1}. **${t.title}**: ${desc || ''}`;
 }).join('\n') : '無'}
@@ -174,7 +173,7 @@ ${activeIssues.length > 0 ? activeIssues.map((t, i) => {
     const handleSave = () => {
         if (!reportsDb) return;
         startTransition(async () => {
-            let initialProps: any = {};
+            const initialProps: Record<string, string> = {};
             const projProp = reportsDb.db.schema.find(s => s.name === 'Project ID' || s.name === 'Project');
             const dateProp = reportsDb.db.schema.find(s => s.name === 'Date Range');
 
@@ -247,7 +246,7 @@ ${activeIssues.length > 0 ? activeIssues.map((t, i) => {
                     <div className="mt-8 bg-blue-50/50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 max-w-4xl mx-auto">
                         <p><strong>Note:</strong> This report is generated dynamically based on the Tasks and Issues databases.</p>
                         <ul className="list-disc ml-5 mt-2 space-y-1">
-                            <li><strong>上週執行事項:</strong> Tasks marked as "Done" within the last 7 days.</li>
+                            <li><strong>上週執行事項:</strong> Tasks marked as &quot;Done&quot; within the last 7 days.</li>
                             <li><strong>本週執行事項:</strong> Tasks not Done, currently overlapping with this week.</li>
                             <li><strong>未來三週:</strong> Tasks starting or ending within the next 21 days (excluding this week).</li>
                             <li><strong>臨時動議:</strong> Any open items in the Issue Tracker.</li>
@@ -277,7 +276,7 @@ ${activeIssues.length > 0 ? activeIssues.map((t, i) => {
     );
 }
 
-function FileIcon(props: any) {
+function FileIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

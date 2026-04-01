@@ -34,7 +34,7 @@ export default function DatabasePage({
         if (filtersStr) {
             currentFilters = JSON.parse(filtersStr);
         }
-    } catch (e) {
+    } catch {
         console.error("Failed to parse filters from URL");
     }
 
@@ -147,9 +147,7 @@ export default function DatabasePage({
         router.replace(`${pathname}?${params.toString()}`);
     };
 
-    const singularName = database.name.endsWith('s')
-        ? database.name.slice(0, -1)
-        : database.name;
+
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">

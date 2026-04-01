@@ -26,10 +26,6 @@ export default function TimelineView({
     database: Database;
     pages: Page[];
 }) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-
     const [isPending, startTransition] = useTransition();
     const [localPages, setLocalPages] = useState<Page[]>(pages);
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -44,22 +40,13 @@ export default function TimelineView({
 
     const dateProps = database.schema.filter(p => p.type === 'date');
 
-    if (dateProps.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
-                <CalendarIcon className="w-8 h-8 opacity-50" />
-                <p>This database has no Date properties to visualize.</p>
-            </div>
-        );
-    }
+    const startProp = dateProps.find(p => p.name.toLowerCase().includes('start')) || dateProps[0];
+    let endPropTemp = dateProps.find(p => p.name.toLowerCase().includes('due') || p.name.toLowerCase().includes('end'));
+    if (dateProps.length === 1) endPropTemp = startProp;
+    if (!endPropTemp && startProp) endPropTemp = startProp;
+    const endProp = endPropTemp;
 
-    let startProp = dateProps.find(p => p.name.toLowerCase().includes('start')) || dateProps[0];
-    let endProp = dateProps.find(p => p.name.toLowerCase().includes('due') || p.name.toLowerCase().includes('end'));
-
-    if (dateProps.length === 1) endProp = startProp;
-    if (!endProp && startProp) endProp = startProp;
-
-    const isSingleDateMode = startProp.id === endProp?.id;
+    const isSingleDateMode = startProp?.id === endProp?.id;
 
     const groupableProps = database.schema.filter(p => ['select', 'status', 'person', 'text'].includes(p.type));
     const activeGroupProp = groupByPropId 
@@ -88,9 +75,12 @@ export default function TimelineView({
             groups[''] = localPages;
         }
         return groups;
+        // eslint-disable-next-line react-hooks/preserve-manual-memoization
     }, [localPages, activeGroupProp]);
 
     const { days, minDate } = useMemo(() => {
+        if (!startProp) return { days: [], minDate: new Date() };
+
         const allDates = localPages.flatMap(p => {
             const dates = [];
             if (p.properties[startProp.id]) dates.push(new Date(p.properties[startProp.id]));
@@ -141,6 +131,15 @@ export default function TimelineView({
         }
         setIsExporting(false);
     };
+
+    if (dateProps.length === 0 || !startProp) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
+                <CalendarIcon className="w-8 h-8 opacity-50" />
+                <p>This database has no Date properties to visualize.</p>
+            </div>
+        );
+    }
 
     if (days.length === 0) {
         return (
@@ -303,9 +302,8 @@ export default function TimelineView({
                             ))}
                         </div>
 
-                        {/* Group Render (Parent / Child) */}
                         <div className="relative z-10 w-full flex flex-col gap-4">
-                            {Object.entries(groupedPages).map(([groupName, gPages], groupIndex) => (
+                            {Object.entries(groupedPages).map(([groupName, gPages]) => (
                                 <div key={groupName} className="flex min-h-[60px] relative border-b border-gray-100 last:border-0 pb-4">
                                     {/* Parent Item (Large Block on left) */}
                                     <div className={`w-32 flex-shrink-0 sticky left-0 z-30 flex items-center justify-center p-3 text-sm tracking-wide break-words text-center ${groupName
@@ -326,7 +324,6 @@ export default function TimelineView({
                                                     key={page.id}
                                                     page={page}
                                                     database={database}
-                                                    days={days}
                                                     minDate={minDate}
                                                     startProp={startProp}
                                                     endProp={endProp!}
@@ -346,9 +343,9 @@ export default function TimelineView({
 }
 
 function TimelineRow({
-    page, database, days, minDate, startProp, endProp, isSingleDateMode
+    page, database, minDate, startProp, endProp, isSingleDateMode
 }: {
-    page: Page; database: Database; days: Date[]; minDate: Date; startProp: PropertySchema; endProp: PropertySchema; isSingleDateMode: boolean;
+    page: Page; database: Database; minDate: Date; startProp: PropertySchema; endProp: PropertySchema; isSingleDateMode: boolean;
 }) {
     const startStr = page.properties[startProp.id];
     const endStr = isSingleDateMode ? startStr : (page.properties[endProp.id] || startStr);
@@ -414,8 +411,8 @@ function TimelineRow({
                 style={{
                     left: renderLeft,
                     width: renderWidth,
-                    backgroundColor: '#bfdffa', // Sub-item gantt bar color
-                    border: '1px solid #9cbfe8',
+                    backgroundColor: color, // Sub-item gantt bar color
+                    border: '1px solid rgba(0,0,0,0.1)',
                     touchAction: 'none',
                     clipPath: 'polygon(0% 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 0% 100%)' // Add an arrow point tip!
                 }}

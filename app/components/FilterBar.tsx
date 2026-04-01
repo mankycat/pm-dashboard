@@ -1,6 +1,6 @@
 'use client';
 
-import { Database, PropertySchema } from '@/lib/data';
+import { Database } from '@/lib/data';
 import { useState, useRef, useEffect } from 'react';
 import { Filter, Plus, X, ChevronDown } from 'lucide-react';
 

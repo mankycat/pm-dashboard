@@ -3,12 +3,10 @@
 import {
   getDatabases,
   getPages,
-  savePage,
   updatePage,
   createPageInDb,
   Page,
   PropertyValue,
-  getDatabase,
   deletePage,
   updateDatabasePropertySchema,
   PropertySchema,
@@ -47,6 +45,7 @@ export async function updatePageProperty(
   databaseId: string,
   pageId: string,
   propertyId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
 ) {
   await updatePage(databaseId, pageId, (page) => {

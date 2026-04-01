@@ -31,7 +31,8 @@ export default function PropertyOptionsEditor({
 
     useEffect(() => {
         if (isOpen) {
-            setOptions(property.options || []);
+            const t = setTimeout(() => setOptions(property.options || []), 0);
+            return () => clearTimeout(t);
         }
     }, [isOpen, property]);
 
@@ -46,7 +47,7 @@ export default function PropertyOptionsEditor({
         setOptions([...options, newOption]);
     };
 
-    const handleUpdateOption = (id: string, updates: any) => {
+    const handleUpdateOption = (id: string, updates: Partial<{name: string, color: string}>) => {
         setOptions(options.map(opt => opt.id === id ? { ...opt, ...updates } : opt));
     };
 
@@ -78,7 +79,7 @@ export default function PropertyOptionsEditor({
                     </div>
 
                     <div className="space-y-3 mb-6 max-h-[50vh] overflow-y-auto pr-2">
-                        {options.map((opt, index) => (
+                        {options.map((opt) => (
                             <div key={opt.id} className="flex items-center gap-2 group">
                                 <GripVertical className="w-4 h-4 text-gray-300 cursor-grab opacity-50 hover:opacity-100" />
                                 <input
