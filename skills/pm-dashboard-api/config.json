@@ -1,0 +1,4 @@
+{
+  "DASHBOARD_URL": "http://localhost:3000",
+  "comment": "Modify the DASHBOARD_URL if your PM Dashboard is listening on a custom port (e.g., 9991). No gateway restart required."
+}

@@ -33,9 +33,13 @@ To get context, an agent should:
 2.  Read `data/pages/{databaseId}.json` to get the actual data.
 
 ### Writing Data
-To prevent file collision and to ensure that actions are correctly logged to the `activity_logs.json`, agents MUST prioritize using the native local REST API (`curl http://localhost:3000/api/...`) instead of modifying files directly.
+To prevent file collision and to ensure that actions are correctly logged to the `activity_logs.json`, agents MUST prioritize using the native local REST API (`curl {{PM_DASHBOARD_URL}}/api/...`) instead of modifying files directly.
 - **Available APIs**: `GET`, `POST`, `PATCH`, and `DELETE` on `/api/pages`.
 - This automatically triggers the dashboard's internal mutation logic and updates the audit log securely without race conditions.
+
+### 4. Configuration
+Developers or Agents should determine the `PM_DASHBOARD_URL` from the environment or use `http://localhost:3000` as a fallback.
+If you are running in a custom port (e.g. `9991`), set the `PM_DASHBOARD_URL="http://localhost:9991"` accordingly.
 
 If editing JSON files directly (e.g. via `write_to_file`), **BEWARE OF RACE CONDITIONS AND AUDIT LOG DESYNCS**.
 

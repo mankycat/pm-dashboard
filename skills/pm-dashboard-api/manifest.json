@@ -1,0 +1,24 @@
+{
+  "name": "pm-dashboard-api",
+  "version": "1.2.0",
+  "description": "Professional API Skill for PM Dashboard with Python CLI client support.",
+  "author": "Bruce",
+  "license": "MIT",
+  "entry": "SKILL.md",
+  "capabilities": [
+    {
+      "id": "get-databases",
+      "description": "Fetch available database schemas (Tasks, Projects, etc.)."
+    },
+    {
+      "id": "manage-pages",
+      "description": "Read, Create, Update, or Delete entries in the PM Dashboard."
+    }
+  ],
+  "permissions": {
+    "network": true,
+    "filesystem": true,
+    "shell": true,
+    "env": ["PM_DASHBOARD_URL"]
+  }
+}
