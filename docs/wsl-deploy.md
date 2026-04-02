@@ -42,9 +42,16 @@ npm install -g pm2
 # 在背景啟動 Next.js 伺服器，並命名為 'pm-dashboard'
 pm2 start npm --name "pm-dashboard" -- start
 
+# 指定 port
+pm2 start npm --name "pm-dashboard" -- start -- -p 58081
+
+# 綁定所有網卡
+pm2 start npm --name "pm-dashboard" -- start -- -H 0.0.0.0 -p 58081
+
 # 設定開機自動重啟 pm2 (選用)
 pm2 startup
 pm2 save
+pm2 list
 
 # 常用 pm2 指令：
 # 監控運行狀態: pm2 monit
