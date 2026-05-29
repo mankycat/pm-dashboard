@@ -1,7 +1,7 @@
 # PM Dashboard (Spec-Driven)
 
 這是一個基於 **Spec-Driven Development (SDD)** 方法論開發的專案管理儀表板。
-由 Agent (Amber) 與 User (Bruce) 共同維護。
+主要目的是建立一套由 Agent 與 User 可以共同維護使用查看編輯的工作管理工具。
 
 ## 📁 文件與規格
 
